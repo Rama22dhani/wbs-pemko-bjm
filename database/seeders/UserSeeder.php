@@ -38,6 +38,14 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
+        // 4. Verifikator
+        User::create([
+            'name' => 'Sarah Verifikator',
+            'email' => 'verifikator@mpdpp.banjarmasinkota.go.id',
+            'peran' => 'verifikator',
+            'password' => Hash::make('password'),
+        ]);
+
         // 6. Pelapor 
         User::create([
             'name' => 'Mas Fauzi Pelapor',

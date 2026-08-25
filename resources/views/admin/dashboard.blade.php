@@ -708,19 +708,7 @@
                                     <td class="p-4 text-center pr-6">
                                         <div class="flex items-center justify-center gap-1.5 flex-wrap">
                                             
-                                            @if($k->status === 'masuk')
-                                                <button @click='showModalVerifikasi = true; formVerif = {
-                                                    id: {{ $k->id }},
-                                                    judul: {{ json_encode($k->judul_laporan) }},
-                                                    pelapor: {{ json_encode($k->user->name ?? "Anonim") }},
-                                                    keputusan: "terima",
-                                                    tingkat_pelanggaran: "",
-                                                    investigator_id: "",
-                                                    catatan_verifikator: ""
-                                                }' class="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-bjm-gold hover:from-amber-600 hover:to-amber-700 text-white rounded-lg text-xs font-bold tracking-wide shadow-md shadow-amber-500/20 hover:scale-105 transition-all" title="Verifikasi & Disposisi">
-                                                    🛡️ VERIFIKASI
-                                                </button>
-                                            @endif
+                                            <!-- Tombol Verifikasi dipindah ke Verifikator -->
 
                                             <a href="{{ route('admin.show', $k->id) }}" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all shadow-sm" title="Lihat Detail Berkas">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
@@ -774,72 +762,7 @@
                         </table>
                     </div>
 
-                    <!-- Modal Verifikasi Kasus -->
-                    <div x-show="showModalVerifikasi" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4" style="display: none;" x-transition>
-                        <div @click.away="showModalVerifikasi = false" class="bg-white rounded-2xl shadow-xl w-full max-w-xl overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
-                            <div class="bg-bjm-dark p-5 border-b-4 border-bjm-gold flex justify-between items-center sticky top-0 z-10">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xl">🛡️</span>
-                                    <h3 class="text-white font-bold text-lg">Panel Verifikasi & Disposisi Laporan</h3>
-                                </div>
-                                <button @click="showModalVerifikasi = false" class="text-slate-300 hover:text-white font-bold">✕</button>
-                            </div>
-
-                            <form :action="'/admin/kasus/' + formVerif.id + '/verifikasi'" method="POST" class="p-6 overflow-y-auto space-y-4">
-                                @csrf
-                                @method('PUT')
-
-                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 leading-tight">
-                                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Pelapor: <span class="text-bjm-gold" x-text="formVerif.pelapor"></span></span>
-                                    <p class="text-sm font-black text-slate-800 mt-1.5 line-clamp-2" x-text="formVerif.judul"></p>
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Ambil Keputusan <span class="text-red-500">*</span></label>
-                                    <select name="keputusan" x-model="formVerif.keputusan" class="w-full bg-white border-2 border-slate-300 focus:border-bjm-gold rounded-xl px-4 py-3 font-extrabold text-xs outline-none transition">
-                                        <option value="terima">🟢 TERIMA & DISPOSISIKAN KE INVESTIGATOR</option>
-                                        <option value="tolak">🔴 TOLAK & TUTUP KASUS INI</option>
-                                    </select>
-                                </div>
-
-                                <div x-show="formVerif.keputusan === 'terima'" x-transition class="space-y-4 pt-2 border-t border-slate-100">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Tingkat Kasus <span class="text-red-500">*</span></label>
-                                            <select name="tingkat_pelanggaran" x-model="formVerif.tingkat_pelanggaran" :required="formVerif.keputusan === 'terima'" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-bold focus:border-bjm-gold outline-none">
-                                                <option value="">-- Pilih Tingkat --</option>
-                                                <option value="Ringan">Ringan (Administrasi/Teguran)</option>
-                                                <option value="Sedang">Sedang (Etika/Disiplin)</option>
-                                                <option value="Berat">Berat (Pidana/Korupsi/Pungli)</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Tugaskan Investigator <span class="text-red-500">*</span></label>
-                                            <select name="investigator_id" x-model="formVerif.investigator_id" :required="formVerif.keputusan === 'terima'" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-bold focus:border-bjm-gold outline-none">
-                                                <option value="">-- Pilih Investigator --</option>
-                                                @foreach($dataPegawai->where('peran', 'investigator') as $inv)
-                                                    <option value="{{ $inv->id }}">{{ $inv->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1" x-text="formVerif.keputusan === 'terima' ? 'Instruksi Khusus untuk Investigator' : 'Alasan Laporan Pengaduan Ditolak'"></label>
-                                    <textarea name="catatan_verifikator" x-model="formVerif.catatan_verifikator" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-xs focus:border-bjm-gold outline-none" :placeholder="formVerif.keputusan === 'terima' ? 'Contoh: Segera periksa bukti rekaman CCTV di lokasi...' : 'Contoh: Bukti foto buram dan tidak menunjukkan identitas terlapor...'"></textarea>
-                                </div>
-
-                                <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-100">
-                                    <button type="button" @click="showModalVerifikasi = false" class="px-5 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition">Batal</button>
-                                    <button type="submit" class="px-6 py-2.5 text-xs font-black text-white rounded-xl shadow-md transition transform hover:scale-105"
-                                        :class="formVerif.keputusan === 'terima' ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 shadow-emerald-500/30' : 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 shadow-red-500/30'"
-                                        x-text="formVerif.keputusan === 'terima' ? 'ACC & DISPOSISI KE INVESTIGATOR' : 'KONFIRMASI TOLAK LAPORAN'">
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                    <!-- Modal Verifikasi Kasus dihapus, pindah ke Verifikator -->
 
                     <!-- Modal Edit Kasus Manual -->
                     <div x-show="showModalEditKasus" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4" style="display: none;" x-transition>
@@ -1674,9 +1597,9 @@
                                     <td class="p-4 pl-6 font-mono font-bold text-amber-600">{{ $kpt->kode_tiket }}</td>
                                     <td class="p-4 text-slate-600 italic">"{{ Str::limit($kpt->kesimpulan, 80) }}"</td>
                                     <td class="p-4 text-center pr-6">
-                                        <a href="{{ route('admin.tindaklanjut.edit', $kpt->id) }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-bjm-dark hover:bg-slate-800 text-white text-xs font-bold rounded-lg transition-all shadow-md transform hover:scale-105">
-                                            ⚖️ Ketok Putusan Final
-                                        </a>
+                                        <span class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-200 text-slate-500 text-xs font-bold rounded-lg cursor-not-allowed">
+                                            ⏳ Menunggu Verifikator
+                                        </span>
                                     </td>
                                 </tr>
                                 @empty

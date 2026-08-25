@@ -26,8 +26,8 @@ class AdminController extends Controller
         // 2. DATA PELAPOR
         $dataPengguna = User::where('peran', 'pelapor')->latest()->get();
 
-        // 3. DATA KASUS
-        $dataKasus = Pengaduan::latest()->get();
+        // 3. DATA KASUS (Hanya melihat yang sudah diverifikasi)
+        $dataKasus = Pengaduan::where('status', '!=', 'masuk')->latest()->get();
 
         // 4. DATA TINGKAT PELANGGARAN (Diambil dari tabel pengaduan)
         $dataPelanggaran = Pengaduan::whereNotNull('tingkat_pelanggaran')->latest()->get();

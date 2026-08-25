@@ -28,6 +28,8 @@ Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard');
     } elseif ($peran === 'investigator') {
         return redirect()->route('investigator.dashboard');
+    } elseif ($peran === 'verifikator') {
+        return redirect()->route('verifikator.dashboard');
     } else {
         return redirect()->route('pelapor.dashboard');
     }
@@ -63,18 +65,26 @@ Route::middleware('auth')->group(function () {
             ->name('investigator.update');
     });
 
+    // 2.5 AREA VERIFIKATOR
+    Route::middleware('peran:verifikator')->group(function () {
+        Route::get('/verifikator/dashboard', [\App\Http\Controllers\VerifikatorController::class, 'index'])
+            ->name('verifikator.dashboard');
+        Route::get('/verifikator/laporan/{id}', [\App\Http\Controllers\VerifikatorController::class, 'show'])
+            ->name('verifikator.show');
+        Route::put('/verifikator/kasus/{id}/verifikasi', [\App\Http\Controllers\VerifikatorController::class, 'verifikasiKasus'])
+            ->name('verifikator.kasus.verifikasi');
+        Route::get('/verifikator/tindak-lanjut/{id}', [\App\Http\Controllers\VerifikatorController::class, 'editTindakLanjut'])
+            ->name('verifikator.tindaklanjut.edit');
+        Route::put('/verifikator/tindak-lanjut/{id}', [\App\Http\Controllers\VerifikatorController::class, 'updateTindakLanjut'])
+            ->name('verifikator.tindaklanjut.update');
+    });
+
     // 3. AREA ADMINISTRATOR (PUSAT KENDALI TUNGGAL)
     Route::middleware('peran:admin')->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])
             ->name('admin.dashboard');
         Route::get('/admin/laporan/{id}', [AdminController::class, 'show'])
             ->name('admin.show');
-        Route::put('/admin/kasus/{id}/verifikasi', [AdminController::class, 'verifikasiKasus'])
-            ->name('admin.kasus.verifikasi');
-        Route::get('/admin/tindak-lanjut/{id}', [AdminController::class, 'editTindakLanjut'])
-            ->name('admin.tindaklanjut.edit');
-        Route::put('/admin/tindak-lanjut/{id}', [AdminController::class, 'updateTindakLanjut'])
-            ->name('admin.tindaklanjut.update');
         Route::put('/admin/kasus/{id}', [App\Http\Controllers\AdminController::class, 'updateKasus'])
             ->name('admin.kasus.update');
         Route::delete('/admin/kasus/{id}', [App\Http\Controllers\AdminController::class, 'destroyKasus'])
@@ -87,8 +97,6 @@ Route::middleware('auth')->group(function () {
             ->name('admin.investigasi.update');
         Route::delete('/admin/investigasi/{id}', [App\Http\Controllers\AdminController::class, 'destroyInvestigasi'])
             ->name('admin.investigasi.destroy');
-        Route::put('/admin/tindaklanjut/{id}', [App\Http\Controllers\AdminController::class, 'updateTindakLanjut'])
-            ->name('admin.tindaklanjut.update');
         Route::delete('/admin/tindaklanjut/{id}', [App\Http\Controllers\AdminController::class, 'destroyTindakLanjut'])
             ->name('admin.tindaklanjut.destroy');
         Route::put('/admin/bukti/{id}', [App\Http\Controllers\AdminController::class, 'updateBukti'])

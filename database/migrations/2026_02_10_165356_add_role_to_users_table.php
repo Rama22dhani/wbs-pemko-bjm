@@ -15,7 +15,8 @@ return new class extends Migration
             $table->enum('peran', [
                 'admin', 
                 'investigator', 
-                'pelapor'
+                'pelapor',
+                'verifikator'
             ])->default('pelapor')->after('email');
         });
     }
