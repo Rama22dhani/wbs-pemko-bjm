@@ -63,7 +63,7 @@ class VerifikatorController extends Controller
     public function show($id)
     {
         $pengaduan = Pengaduan::findOrFail($id);
-        return view('admin.detail', compact('pengaduan')); // we can reuse admin detail view
+        return view('verifikator.detail', compact('pengaduan')); 
     }
 
     public function verifikasiKasus(Request $request, $id)
