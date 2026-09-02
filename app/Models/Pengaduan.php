@@ -22,6 +22,7 @@ class Pengaduan extends Model
         'tanggal_kejadian',
         'lokasi_kejadian',
         'kategori_laporan',
+        'kategori_id',
         'lampiran_bukti',
         
         // Data Verifikator
@@ -54,6 +55,11 @@ class Pengaduan extends Model
     public function investigator()
     {
         return $this->belongsTo(User::class, 'investigator_id');
+    }
+    
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class, 'kategori_id');
     }
     
     // Fungsi tanggapans() sudah dihapus dari sini

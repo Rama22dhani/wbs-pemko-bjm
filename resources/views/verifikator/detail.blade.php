@@ -40,9 +40,9 @@
                 <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">#{{ $pengaduan->kode_tiket }}</h1>
             </div>
             
-            <span class="px-5 py-2.5 rounded-xl font-bold text-sm tracking-wide uppercase shadow-lg shadow-black/20 flex items-center gap-2 border {{ $pengaduan->status == 'selesai' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-white/10 text-white border-white/20' }}">
-                <div class="w-2 h-2 rounded-full {{ $pengaduan->status == 'selesai' ? 'bg-emerald-400' : 'bg-bjm-gold' }} animate-pulse"></div>
-                {{ ucfirst($pengaduan->status) }}
+            <span class="px-5 py-2.5 rounded-xl font-bold text-sm tracking-wide uppercase shadow-lg shadow-black/20 flex items-center gap-2 border {{ $pengaduan->status == 'selesai' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : ($pengaduan->status == 'tindak_lanjut' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' : 'bg-white/10 text-white border-white/20') }}">
+                <div class="w-2 h-2 rounded-full {{ $pengaduan->status == 'selesai' ? 'bg-emerald-400' : ($pengaduan->status == 'tindak_lanjut' ? 'bg-cyan-400' : 'bg-bjm-gold') }} animate-pulse"></div>
+                {{ $pengaduan->status == 'tindak_lanjut' ? 'Menunggu Tindak Lanjut' : ucfirst($pengaduan->status) }}
             </span>
         </div>
     </div>
@@ -57,7 +57,7 @@
                 Data Kasus
             </button>
             
-            @if($pengaduan->status == 'selesai' || $pengaduan->status == 'investigasi')
+            @if($pengaduan->status == 'selesai' || $pengaduan->status == 'investigasi' || $pengaduan->status == 'tindak_lanjut')
             <button @click="tab = 'investigasi'" :class="tab === 'investigasi' ? 'bg-bjm-dark text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'" class="px-5 py-2.5 rounded-lg font-bold text-sm transition-all flex items-center gap-2 whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 Hasil Investigasi
@@ -182,7 +182,7 @@
         </div>
 
         <!-- TAB: INVESTIGASI -->
-        @if($pengaduan->status == 'selesai' || $pengaduan->status == 'investigasi')
+        @if($pengaduan->status == 'selesai' || $pengaduan->status == 'investigasi' || $pengaduan->status == 'tindak_lanjut')
         <div x-show="tab === 'investigasi'" style="display: none;" class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-10 shadow-lg shadow-slate-200/50 space-y-8" x-transition.opacity>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-b border-slate-100 pb-8">
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">

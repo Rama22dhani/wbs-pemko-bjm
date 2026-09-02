@@ -149,7 +149,12 @@
                 Data Pegawai
             </button>
 
+
             <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Data Layanan Pengaduan</p>
+            <button @click="tab = 'kategori'; sidebarOpen = false" :class="tab === 'kategori' ? 'bg-bjm-gold/10 text-bjm-gold border-l-4 border-bjm-gold' : 'hover:bg-slate-800 hover:text-white border-l-4 border-transparent'" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-lg text-sm font-medium transition-colors">
+                <svg class="w-5 h-5 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                Data Kategori
+            </button>
             <button @click="tab = 'kasus'; sidebarOpen = false" :class="tab === 'kasus' ? 'bg-bjm-gold/10 text-bjm-gold border-l-4 border-bjm-gold' : 'hover:bg-slate-800 hover:text-white border-l-4 border-transparent'" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-lg text-sm font-medium transition-colors">
                 <svg class="w-5 h-5 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 Data Kasus
@@ -528,6 +533,132 @@
                     </div>
                 </div>
 
+                <!-- MENU 0.5: MASTER DATA KATEGORI -->
+                <div x-show="tab === 'kategori'" x-transition.opacity style="display: none;"
+                    x-init="initTable()" x-data="{ ...tableManager('table-kategori', {{ count($kategoris) }}), showModal: false, editMode: false, form: { id: '', nama_kategori: '', deskripsi: '' } }">
+                    <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-white">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800">Master Data Kategori</h3>
+                            <span class="bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1 rounded-full mt-2 inline-block">Total: {{ count($kategoris) }}</span>
+                        </div>
+                        <div>
+                            <button @click="showModal = true; editMode = false; form = { id: '', nama_kategori: '', deskripsi: '' }" class="bg-gradient-to-r from-bjm-gold to-amber-500 hover:from-amber-600 hover:to-amber-600 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md shadow-amber-500/20 transform hover:scale-105">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                Tambah Kategori
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="px-4 py-2.5 bg-white border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600">
+                        <div class="flex items-center gap-1.5 font-medium">
+                            <span>Tampilkan</span>
+                            <select x-model="perPage" @change="updateTable()" class="bg-white border border-slate-300 rounded px-2.5 py-1 text-xs font-semibold focus:border-bjm-gold outline-none">
+                                <option value="5">5</option><option value="10">10</option><option value="25">25</option><option value="50">50</option>
+                            </select>
+                            <span>data</span>
+                        </div>
+                        <div class="relative w-full sm:w-64">
+                            <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
+                            <input type="text" x-model="search" @input="updateTable()" placeholder="Cari kategori..." class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-bjm-gold/30 focus:border-bjm-gold outline-none transition-all placeholder:text-slate-400">
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto bg-white">
+                        <table id="table-kategori" class="w-full text-left text-sm whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-100/50 text-slate-500 text-[10px] uppercase tracking-wider font-bold border-b border-slate-200">
+                                    <th class="px-4 py-3 text-center w-12">No</th>
+                                    <th class="px-4 py-3">Nama Kategori</th>
+                                    <th class="px-4 py-3">Deskripsi</th>
+                                    <th class="px-4 py-3 text-center">Jumlah Laporan</th>
+                                    <th class="px-4 py-3 text-center w-28">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @forelse($kategoris as $index => $item)
+                                    <tr data-row="true" class="hover:bg-slate-50/80 transition-colors">
+                                        <td class="px-4 py-3 text-center text-slate-500 font-medium text-xs col-no">{{ $index + 1 }}</td>
+                                        <td class="px-4 py-3 font-bold text-slate-800">{{ $item->nama_kategori }}</td>
+                                        <td class="px-4 py-3 text-slate-600 truncate max-w-xs" title="{{ $item->deskripsi }}">{{ Str::limit($item->deskripsi, 50) ?: '-' }}</td>
+                                        <td class="px-4 py-3 text-center">
+                                            <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold">{{ $item->pengaduans_count }}</span>
+                                        </td>
+                                        <td class="px-4 py-3 text-center">
+                                            <div class="flex items-center justify-center gap-1.5">
+                                                <button @click="showModal = true; editMode = true; form = { id: '{{ $item->id }}', nama_kategori: '{{ addslashes($item->nama_kategori) }}', deskripsi: '{{ addslashes($item->deskripsi) }}' }" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Edit">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                </button>
+                                                @if($item->pengaduans_count == 0)
+                                                <form action="{{ route('kategori.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?')">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit" class="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors" title="Hapus">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    </button>
+                                                </form>
+                                                @else
+                                                <button type="button" class="p-1.5 text-slate-300 cursor-not-allowed" title="Tidak dapat dihapus karena digunakan pada pengaduan">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                </button>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr data-row="false">
+                                        <td colspan="5" class="px-4 py-8 text-center text-slate-500">
+                                            <svg class="w-12 h-12 mx-auto text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                                            <p class="font-medium text-sm">Belum ada data kategori</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs" x-show="filteredCount > 0">
+                        <span class="text-slate-600 font-medium">Menampilkan <span class="font-bold text-slate-800" x-text="startIndex"></span> - <span class="font-bold text-slate-800" x-text="endIndex"></span> dari <span class="font-bold text-slate-800" x-text="filteredCount"></span></span>
+                        <div class="flex items-center gap-1">
+                            <button type="button" @click="prevPage()" :disabled="currentPage <= 1" class="px-3 py-1.5 border border-slate-300 rounded bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors">Sebelumnya</button>
+                            <template x-for="p in totalPages" :key="p">
+                                <button type="button" @click="goToPage(p)" :class="currentPage === p ? 'bg-amber-500 text-white font-bold' : 'bg-white text-slate-700 hover:bg-slate-100'" class="px-3 py-1.5 border border-slate-300 rounded text-xs transition" x-text="p"></button>
+                            </template>
+                            <button type="button" @click="nextPage()" :disabled="currentPage >= totalPages" class="px-3 py-1.5 border border-slate-300 rounded bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors">Selanjutnya</button>
+                        </div>
+                    </div>
+
+                    <!-- Modal Form Kategori -->
+                    <div x-show="showModal" class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden p-4" style="display: none;">
+                        <div x-show="showModal" x-transition.opacity class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" @click="showModal = false"></div>
+                        <div x-show="showModal" x-transition.scale.origin.bottom class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-full overflow-hidden flex flex-col">
+                            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                                <h3 class="text-lg font-extrabold text-slate-800" x-text="editMode ? 'Edit Kategori' : 'Tambah Kategori Baru'"></h3>
+                                <button @click="showModal = false" class="text-slate-400 hover:text-red-500 transition-colors p-1 rounded-lg hover:bg-red-50"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                            </div>
+                            <form :action="editMode ? '{{ url('kategori') }}/' + form.id : '{{ route('kategori.store') }}'" method="POST" class="flex-1 overflow-y-auto">
+                                @csrf
+                                <input type="hidden" name="_method" value="PUT" x-bind:disabled="!editMode">
+                                <div class="p-6 space-y-5">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Nama Kategori <span class="text-red-500">*</span></label>
+                                        <input type="text" name="nama_kategori" x-model="form.nama_kategori" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 rounded-xl px-4 py-2.5 text-sm focus:border-bjm-gold focus:bg-white focus:ring-2 focus:ring-bjm-gold/30 outline-none transition-all" placeholder="Contoh: Gratifikasi">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Deskripsi (Opsional)</label>
+                                        <textarea name="deskripsi" x-model="form.deskripsi" rows="3" class="w-full bg-slate-50 border border-slate-300 text-slate-800 rounded-xl px-4 py-2.5 text-sm focus:border-bjm-gold focus:bg-white focus:ring-2 focus:ring-bjm-gold/30 outline-none transition-all" placeholder="Tuliskan deskripsi kategori..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3 rounded-b-2xl">
+                                    <button type="button" @click="showModal = false" class="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors">Batal</button>
+                                    <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-bjm-gold hover:bg-amber-600 rounded-xl shadow-md shadow-amber-500/20 transition-all transform hover:-translate-y-0.5" x-text="editMode ? 'Simpan Perubahan' : 'Tambah Kategori'"></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- MENU 1: DATA AKSES (LOGIN) -->
                 <div x-show="tab === 'pegawai'" x-transition.opacity style="display: none;" 
                     x-init="initTable()" x-data="{ ...tableManager('table-pegawai', {{ count($dataPegawai) }}),  showModal: false, editMode: false, form: { id: '', name: '', email: '', peran: 'investigator' } }">
@@ -779,7 +910,7 @@
                             nomor_hp: '',
                             email: '',
                             judul_laporan: '', 
-                            kategori_laporan: '', 
+                            kategori_id: '', 
                             tanggal_kejadian: '', 
                             lokasi_kejadian: '', 
                             status: '', 
@@ -868,9 +999,10 @@
                                     <td  class="px-3.5 py-2.5 border border-slate-200">
                                         <span class="px-3 py-1 text-[11px] uppercase rounded-full font-bold border 
                                             {{ $k->status == 'selesai' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 
+                                                ($k->status == 'tindak_lanjut' ? 'bg-cyan-50 text-cyan-700 border-cyan-200' :
                                                 ($k->status == 'investigasi' ? 'bg-blue-50 text-blue-700 border-blue-200' : 
-                                                ($k->status == 'ditolak' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200')) }}">
-                                            {{ $k->status }}
+                                                ($k->status == 'ditolak' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200'))) }}">
+                                            {{ $k->status == 'tindak_lanjut' ? 'menunggu tindak lanjut' : $k->status }}
                                         </span>
                                     </td>
                                     <td  class="px-3.5 py-2.5 text-center border border-slate-200">
@@ -890,7 +1022,7 @@
                                                 nomor_hp: {{ json_encode($k->nomor_hp) }},
                                                 email: {{ json_encode($k->email) }},
                                                 judul_laporan: {{ json_encode($k->judul_laporan) }}, 
-                                                kategori_laporan: {{ json_encode($k->kategori_laporan) }}, 
+                                                kategori_id: {{ json_encode($k->kategori_id) }}, 
                                                 tanggal_kejadian: {{ json_encode(\Carbon\Carbon::parse($k->tanggal_kejadian)->format("Y-m-d")) }}, 
                                                 lokasi_kejadian: {{ json_encode($k->lokasi_kejadian) }}, 
                                                 status: {{ json_encode($k->status) }}, 
@@ -1009,22 +1141,12 @@
                                         </div>
                                         <div>
                                             <label class="block text-lg font-bold text-slate-700 mb-1">Kategori Pelanggaran <span class="text-red-500">*</span></label>
-                                            <select name="kategori_laporan" x-model="formKasus.kategori_laporan" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-bjm-gold outline-none">
+                                            <select name="kategori_id" x-model="formKasus.kategori_id" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-bjm-gold outline-none">
                                                 <option value="">-- Pilih Klasifikasi Terdekat --</option>
-                                                <option value="Pungli">Pungli (Pungutan Liar)</option>
-                                                <option value="Korupsi">Korupsi</option>
-                                                <option value="Gratifikasi">Gratifikasi / Suap</option>
-                                                <option value="Pelanggaran Disiplin">Pelanggaran Disiplin ASN</option>
-                                                <option value="Benturan Kepentingan">Benturan Kepentingan (Nepotisme)</option>
-                                                <option value="Penyalahgunaan Wewenang">Penyalahgunaan Wewenang & Aset</option>
-                                                <option value="Lainnya">Lainnya (Tulis manual)</option>
+                                                @foreach($kategoris as $kategori)
+                                                    <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                                                @endforeach
                                             </select>
-                                            <div x-show="formKasus.kategori_laporan === 'Lainnya'" x-transition class="mt-3 bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-inner">
-                                                <label class="block text-xs font-black text-amber-900 uppercase mb-2">
-                                                    Tuliskan Jenis Pelanggaran <span class="text-red-600">*</span>
-                                                </label>
-                                                <input type="text" name="kategori_lainnya" x-model="formKasus.kategori_lainnya" :required="formKasus.kategori_laporan === 'Lainnya'" class="w-full bg-white border border-amber-300 rounded-lg px-4 py-2.5 text-lg font-bold text-slate-800 outline-none focus:ring-2 focus:ring-bjm-gold placeholder:font-normal placeholder:text-slate-400" placeholder="Ketik jenis pelanggaran di sini...">
-                                            </div>
                                         </div>
                                         <div>
                                             <label class="block text-lg font-bold text-slate-700 mb-1">Tanggal Kejadian <span class="text-red-500">*</span></label>
@@ -1077,7 +1199,8 @@
                                             <select name="status" x-model="formKasus.status" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-bjm-gold outline-none">
                                                 <option value="masuk">Masuk / Menunggu Verifikasi</option>
                                                 <option value="investigasi">Proses Audit / Investigasi</option>
-                                                <option value="selesai">Selesai</option>
+                                                <option value="tindak_lanjut">Menunggu Tindak Lanjut</option>
+                                                <option value="selesai">Selesai 100% (Kasus Ditutup)</option>
                                                 <option value="ditolak">Ditolak</option>
                                             </select>
                                         </div>
@@ -1403,7 +1526,7 @@
                                             <button @click='showModalEditTindakLanjut = true; formTindakLanjut = { 
                                                 id: {{ $dt->id }}, 
                                                 judul_laporan: {{ json_encode($dt->judul_laporan) }},
-                                                kategori_laporan: {{ json_encode($dt->kategori_laporan) }},
+                                                kategori_id: {{ json_encode($dt->kategori_id) }},
                                                 tanggal_kejadian: "{{ $dt->tanggal_kejadian ? \Carbon\Carbon::parse($dt->tanggal_kejadian)->format('Y-m-d') : '' }}",
                                                 lokasi_kejadian: {{ json_encode($dt->lokasi_kejadian) }},
                                                 isi_laporan: {{ json_encode($dt->isi_laporan) }},
@@ -1472,22 +1595,12 @@
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                                         <div>
                                             <label class="block text-xs font-bold text-slate-700 mb-1">Kategori</label>
-                                            <select name="kategori_laporan" x-model="formTindakLanjut.kategori_laporan" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-bjm-gold outline-none">
+                                            <select name="kategori_id" x-model="formTindakLanjut.kategori_id" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-bjm-gold outline-none">
                                                 <option value="">-- Pilih Klasifikasi Terdekat --</option>
-                                                <option value="Pungli">Pungli (Pungutan Liar)</option>
-                                                <option value="Korupsi">Korupsi</option>
-                                                <option value="Gratifikasi">Gratifikasi / Suap</option>
-                                                <option value="Pelanggaran Disiplin">Pelanggaran Disiplin ASN</option>
-                                                <option value="Benturan Kepentingan">Benturan Kepentingan (Nepotisme)</option>
-                                                <option value="Penyalahgunaan Wewenang">Penyalahgunaan Wewenang & Aset</option>
-                                                <option value="Lainnya">Lainnya (Tulis manual)</option>
+                                                @foreach($kategoris as $kategori)
+                                                    <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                                                @endforeach
                                             </select>
-                                            <div x-show="formTindakLanjut.kategori_laporan === 'Lainnya'" x-transition class="mt-3 bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-inner">
-                                                <label class="block text-xs font-black text-amber-900 uppercase mb-2">
-                                                    Tuliskan Jenis Pelanggaran <span class="text-red-600">*</span>
-                                                </label>
-                                                <input type="text" name="kategori_lainnya" x-model="formTindakLanjut.kategori_lainnya" :required="formTindakLanjut.kategori_laporan === 'Lainnya'" class="w-full bg-white border border-amber-300 rounded-lg px-4 py-2.5 text-lg font-bold text-slate-800 outline-none focus:ring-2 focus:ring-bjm-gold placeholder:font-normal placeholder:text-slate-400" placeholder="Ketik jenis pelanggaran di sini...">
-                                            </div>
                                         </div>
                                         <div>
                                             <label class="block text-xs font-bold text-slate-700 mb-1">Tgl Kejadian</label>
@@ -1910,22 +2023,6 @@
                                 <div class="flex-1 h-px bg-slate-300"></div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <!-- Card: Ekspor Excel -->
-                                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex items-center gap-3 mb-3">
-                                            <div class="p-2.5 bg-green-50 text-green-600 rounded-lg text-lg">
-                                                🟩
-                                            </div>
-                                            <h4 class="font-bold text-slate-800 text-sm">Ekspor Data (Excel)</h4>
-                                        </div>
-                                        <p class="text-xs text-slate-500 leading-relaxed mb-5">Unduh data mentah seluruh pengaduan ke dalam format Microsoft Excel (.xlsx) untuk diolah lebih lanjut.</p>
-                                    </div>
-                                    <a href="{{ route('admin.kasus.export.excel') }}" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
-                                        📊 Unduh Excel (.xlsx)
-                                    </a>
-                                </div>
-
                                 <!-- Card: Rekap Kasus -->
                                 <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                                     <div>
@@ -1939,6 +2036,22 @@
                                     </div>
                                     <a href="{{ route('admin.rekap.cetak', 'kasus') }}" target="_blank" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
                                         🖨️ Cetak Rekap Kasus
+                                    </a>
+                                </div>
+
+                                <!-- Card: Data Kategori -->
+                                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center gap-3 mb-3">
+                                            <div class="p-2.5 bg-rose-50 text-rose-600 rounded-lg text-lg">
+                                                📑
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-sm">Data Kategori</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-500 leading-relaxed mb-5">Rekapitulasi agregasi seluruh kategori pelanggaran beserta rincian status penanganannya.</p>
+                                    </div>
+                                    <a href="{{ route('admin.rekap.cetak', 'kategori') }}" target="_blank" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
+                                        🖨️ Cetak Rekap Kategori
                                     </a>
                                 </div>
 
@@ -2003,6 +2116,22 @@
                                     </div>
                                     <a href="{{ route('admin.rekap.cetak', 'bukti') }}" target="_blank" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
                                         🖨️ Cetak Rekap Bukti
+                                    </a>
+                                </div>
+
+                                <!-- Card: Ekspor Excel -->
+                                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center gap-3 mb-3">
+                                            <div class="p-2.5 bg-green-50 text-green-600 rounded-lg text-lg">
+                                                🟩
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-sm">Ekspor Data (Excel)</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-500 leading-relaxed mb-5">Unduh data mentah seluruh pengaduan ke dalam format Microsoft Excel (.xlsx) untuk diolah lebih lanjut.</p>
+                                    </div>
+                                    <a href="{{ route('admin.kasus.export.excel') }}" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
+                                        📊 Unduh Excel (.xlsx)
                                     </a>
                                 </div>
                             </div>

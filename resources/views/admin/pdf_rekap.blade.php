@@ -146,6 +146,46 @@
             </tbody>
         </table>
 
+    @elseif($kategori == 'kategori')
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 30%;">Nama Kategori Pelanggaran</th>
+                    <th style="width: 15%;">Total Kasus</th>
+                    <th style="width: 50%;">Rincian Status Penanganan</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($data as $index => $d)
+                    @php
+                        $total = $d->pengaduans->count();
+                        $selesai = $d->pengaduans->where('status', 'selesai')->count();
+                        $investigasi = $d->pengaduans->where('status', 'investigasi')->count();
+                        $ditolak = $d->pengaduans->where('status', 'ditolak')->count();
+                        $tindak_lanjut = $d->pengaduans->where('status', 'tindak_lanjut')->count();
+                        $masuk = $d->pengaduans->whereIn('status', ['masuk', 'verifikasi'])->count();
+                    @endphp
+                    <tr>
+                        <td class="center">{{ $index + 1 }}</td>
+                        <td><strong>{{ $d->nama_kategori }}</strong></td>
+                        <td class="center"><strong>{{ $total }}</strong> Kasus</td>
+                        <td>
+                            - Selesai: <strong>{{ $selesai }}</strong><br>
+                            - Menunggu Tindak Lanjut: <strong>{{ $tindak_lanjut }}</strong><br>
+                            - Proses Audit/Investigasi: <strong>{{ $investigasi }}</strong><br>
+                            - Masuk / Verifikasi: <strong>{{ $masuk }}</strong><br>
+                            - Ditolak: <strong>{{ $ditolak }}</strong>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="center" style="font-style: italic; color: #777; padding: 15px;">Belum ada data kategori pelanggaran.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+
     @else
         <table class="data-table">
             <thead>

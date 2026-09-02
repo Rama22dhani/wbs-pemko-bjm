@@ -716,9 +716,10 @@
                                 <td class="py-3 px-4 border-b border-slate-200">
                                     <span class="px-2.5 py-1 text-[10px] uppercase font-bold rounded border 
                                         {{ $dk->status == 'selesai' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 
+                                        ($dk->status == 'tindak_lanjut' ? 'bg-cyan-50 text-cyan-700 border-cyan-200' : 
                                         ($dk->status == 'investigasi' ? 'bg-blue-50 text-blue-700 border-blue-200' : 
-                                        ($dk->status == 'ditolak' ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-slate-100 text-slate-600 border-slate-200')) }}">
-                                        {{ $dk->status }}
+                                        ($dk->status == 'ditolak' ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-slate-100 text-slate-600 border-slate-200'))) }}">
+                                        {{ $dk->status == 'tindak_lanjut' ? 'Menunggu Tindak Lanjut' : $dk->status }}
                                     </span>
                                 </td>
                                 <!-- Aksi -->

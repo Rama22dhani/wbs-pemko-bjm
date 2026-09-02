@@ -27,8 +27,12 @@ class VerifikatorController extends Controller
                                     ->get();
 
         // ANTREAN INPUT TINDAK LANJUT
-        $kasusPerluTindakLanjut = Pengaduan::whereNotNull('kesimpulan')
-                                        ->whereNull('tindak_lanjut')
+        $kasusPerluTindakLanjut = Pengaduan::where('status', 'tindak_lanjut')
+                                        ->orWhere(function($query) {
+                                            $query->where('status', 'investigasi')
+                                                  ->whereNotNull('kesimpulan')
+                                                  ->whereNull('tindak_lanjut');
+                                        })
                                         ->latest()
                                         ->get();
 

@@ -56,7 +56,7 @@
     <!-- AREA KONTEN FORMULIR -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 md:p-10 relative overflow-hidden" x-data="{ kategori: '' }">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 md:p-10 relative overflow-hidden" x-data="{ kategori: '', kategoriNama: '' }">
             
             <div class="flex items-start sm:items-center gap-4 mb-8 border-b border-slate-200 pb-6">
                 <div class="w-12 h-12 rounded-xl bg-bjm-gold/10 flex items-center justify-center text-bjm-gold border border-bjm-gold/20 shrink-0">
@@ -81,22 +81,18 @@
                             class="w-full bg-slate-50 border border-slate-300 text-slate-800 rounded-xl px-4 py-3 text-sm focus:border-bjm-gold focus:bg-white focus:ring-4 focus:ring-bjm-gold/10 outline-none transition-all shadow-sm">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-2">Klasifikasi Pelanggaran <span class="text-red-500">*</span></label>
-                        <select name="kategori_laporan" x-model="kategori" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 rounded-xl px-4 py-3 text-sm focus:border-bjm-gold focus:bg-white focus:ring-4 focus:ring-bjm-gold/10 outline-none transition-all shadow-sm">
-                            <option value="">-- Pilih Klasifikasi Terdekat --</option>
-                            <option value="Pungli">Pungli (Pungutan Liar)</option>
-                            <option value="Korupsi">Korupsi</option>
-                            <option value="Gratifikasi">Gratifikasi / Suap</option>
-                            <option value="Pelanggaran Disiplin">Pelanggaran Disiplin ASN</option>
-                            <option value="Benturan Kepentingan">Benturan Kepentingan (Nepotisme)</option>
-                            <option value="Penyalahgunaan Wewenang">Penyalahgunaan Wewenang & Aset</option>
-                            <option value="Lainnya">Lainnya (Tulis manual)</option>
+                        <label for="kategori_id" class="block text-[11px] font-bold text-slate-600 uppercase mb-2">Kategori Pelanggaran <span class="text-red-500">*</span></label>
+                        <select name="kategori_id" id="kategori_id" x-model="kategori" @change="kategoriNama = $event.target.options[$event.target.selectedIndex]?.dataset?.nama || ''" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 rounded-xl px-4 py-3 text-sm focus:border-bjm-gold focus:bg-white focus:ring-4 focus:ring-bjm-gold/10 outline-none transition-all shadow-sm">
+                            <option value="">-- Pilih Kategori Pelanggaran --</option>
+                            @foreach($kategoris as $kategori)
+                                <option value="{{ $kategori->id }}" data-nama="{{ $kategori->nama_kategori }}">{{ $kategori->nama_kategori }}</option>
+                            @endforeach
                         </select>
-                        <div x-show="kategori === 'Lainnya'" x-transition class="mt-3 bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-inner">
+                        <div x-show="kategoriNama && kategoriNama.toLowerCase() === 'lainnya'" x-transition class="mt-3 bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-inner">
                             <label class="block text-xs font-black text-amber-900 uppercase mb-1.5">
                                 Tuliskan Jenis Pelanggaran <span class="text-red-600">*</span>
                             </label>
-                            <input type="text" name="kategori_lainnya" :required="kategori === 'Lainnya'" class="w-full bg-white border border-amber-300 rounded-lg px-4 py-2.5 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-bjm-gold placeholder:font-normal placeholder:text-slate-400" placeholder="Ketik jenis pelanggaran di sini...">
+                            <input type="text" name="kategori_lainnya" :required="kategoriNama && kategoriNama.toLowerCase() === 'lainnya'" class="w-full bg-white border border-amber-300 rounded-lg px-4 py-2.5 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-bjm-gold placeholder:font-normal placeholder:text-slate-400" placeholder="Ketik jenis pelanggaran di sini...">
                         </div>
                     </div>
                 </div>

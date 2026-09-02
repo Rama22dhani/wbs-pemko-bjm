@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\AdminController; 
+use App\Http\Controllers\KategoriController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Pengaduan;
 
@@ -125,6 +126,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/pengguna', [AdminController::class, 'storePengguna'])->name('admin.pengguna.store');
         Route::put('/admin/pengguna/{id}', [AdminController::class, 'updatePengguna'])->name('admin.pengguna.update');
         Route::delete('/admin/pengguna/{id}', [AdminController::class, 'destroyPengguna'])->name('admin.pengguna.destroy');
+        // Route Master Kategori Pelanggaran
+    Route::resource('kategori', KategoriController::class)->except(['index', 'create', 'edit', 'show']);
     });
 
     // 4. Route Profile Bawaan

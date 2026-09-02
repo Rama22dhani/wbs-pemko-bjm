@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\Tanggapan; 
 use Illuminate\Support\Facades\Storage;
+use App\Models\Kategori;
 
 class PengaduanController extends Controller
 {
@@ -27,11 +28,16 @@ class PengaduanController extends Controller
     public function create()
     {
         $user = Auth::user();
-        return view('pelapor.create', compact('user'));
+        $kategoris = Kategori::all();
+        return view('pelapor.create', compact('user', 'kategoris'));
     }
 
     public function store(Request $request)
     {
+        // Cek apakah kategori yang dipilih adalah "Lainnya"
+        $kategori = \App\Models\Kategori::find($request->kategori_id);
+        $isLainnya = $kategori && strtolower($kategori->nama_kategori) === 'lainnya';
+
         // Validasi Input
         $request->validate([
             'nama_pelapor'      => 'required',
@@ -41,21 +47,24 @@ class PengaduanController extends Controller
             'isi_laporan'       => 'required',
             'tanggal_kejadian'  => 'required|date',
             'lokasi_kejadian'   => 'required',
-            'kategori_laporan'  => 'required',
+            'kategori_id'       => 'required|exists:kategoris,id', 
             'lampiran_bukti'    => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
-            'kategori_lainnya'  => 'required_if:kategori_laporan,Lainnya|nullable|string|max:200',
+            'kategori_lainnya'  => $isLainnya ? 'required|string|max:200' : 'nullable',
         ]);
 
         $pathBukti = null;
         if ($request->hasFile('lampiran_bukti')) {
             $pathBukti = $request->file('lampiran_bukti')->store('bukti_laporan', 'public');
         }
-        $kodeTiket = 'KASUS-' . strtoupper(Str::random(5));
+        $kodeTiket = 'KASUS-' . strtoupper(\Illuminate\Support\Str::random(5));
 
         $isiLaporanFinal = $request->isi_laporan;
-        if ($request->kategori_laporan === 'Lainnya' && $request->filled('kategori_lainnya')) {
+        if ($isLainnya && $request->filled('kategori_lainnya')) {
             $isiLaporanFinal = "⚠️ [SPESIFIKASI KATEGORI]: " . strtoupper($request->kategori_lainnya) . "\n--------------------------------------------------\n" . $request->isi_laporan;
         }
+
+        $kategori = \App\Models\Kategori::find($request->kategori_id);
+        $namaKategori = $kategori ? $kategori->nama_kategori : '-';
 
         // Simpan ke Database
         Pengaduan::create([
@@ -69,19 +78,19 @@ class PengaduanController extends Controller
             'isi_laporan'      => $isiLaporanFinal, 
             'tanggal_kejadian' => $request->tanggal_kejadian,
             'lokasi_kejadian'  => $request->lokasi_kejadian,
-            'kategori_laporan' => $request->kategori_laporan,
+            'kategori_id'      => $request->kategori_id, 
+            'kategori_laporan' => $namaKategori,
             'lampiran_bukti'   => $pathBukti,
             'status'           => 'masuk', 
         ]);
 
         return redirect()->route('pelapor.dashboard')
             ->with('success', 'Laporan berhasil dikirim! Kode Kasus: ' . $kodeTiket);
-    
     }
 
-    // =========================================================================
-    // AREA INVESTIGATOR (REFACTORED & BULLETPROOF)
-    // =========================================================================
+        // =========================================================================
+        // AREA INVESTIGATOR (REFACTORED & BULLETPROOF)
+        // =========================================================================
 
     public function indexInvestigator()
     {
@@ -122,7 +131,7 @@ class PengaduanController extends Controller
         $pengaduan = Pengaduan::findOrFail($id);
         
         $dataUpdate = [
-            'status'         => 'selesai', 
+            'status'         => 'tindak_lanjut', 
             'fakta_lapangan' => $request->fakta_lapangan,
             'pihak_terlibat' => $request->pihak_terlibat,
             'kesimpulan'     => $request->kesimpulan,
@@ -138,7 +147,7 @@ class PengaduanController extends Controller
         $pengaduan->update($dataUpdate);
 
         return redirect()->route('investigator.dashboard')
-                        ->with('success', 'Kasus berhasil diselesaikan! Kertas kerja & bukti telah diarsipkan ke meja Admin.');
+                        ->with('success', 'Kertas kerja hasil pemeriksaan lapangan berhasil disimpan dan masuk ke antrean Tindak Lanjut Verifikator.');
     }
 
     // ==========================================

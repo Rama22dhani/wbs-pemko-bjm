@@ -62,9 +62,9 @@ class InvestigatorController extends Controller
             $validated['bukti_investigasi'] = $request->file('bukti_investigasi')->store('bukti_investigasi', 'public');
         }
 
-        // Simpan data pemeriksaan dan perbarui status menjadi 'investigasi'
+        // Simpan data pemeriksaan dan perbarui status menjadi 'tindak_lanjut' (Menunggu Tindak Lanjut)
         $kasus->update(array_merge($validated, [
-            'status' => 'investigasi',
+            'status' => 'tindak_lanjut',
         ]));
 
         return redirect()->route('investigator.dashboard')->with('success', 'Kertas kerja hasil pemeriksaan lapangan berhasil disimpan.');

@@ -65,6 +65,9 @@ class AdminController extends Controller
                                     ->latest()
                                     ->get();
 
+        // 10. DATA KATEGORI PELANGGARAN
+        $kategoris = \App\Models\Kategori::withCount('pengaduans')->latest()->get();
+
         return view('admin.dashboard', compact(
             'dataPegawai', 
             'dataMasterPegawai', 
@@ -75,7 +78,8 @@ class AdminController extends Controller
             'dataInvestigasi',
             'kasusPerluTindakLanjut',
             'dataTindakLanjut',
-            'dataInfoTambahan'
+            'dataInfoTambahan',
+            'kategoris'
         ));
     }
 
@@ -102,7 +106,7 @@ class AdminController extends Controller
     {
         $validatedData = $request->validate([
             'judul_laporan'         => 'sometimes|required|string|max:255',
-            'kategori_laporan'      => 'sometimes|required|string',
+            'kategori_id'           => 'sometimes|required|exists:kategoris,id',
             'tanggal_kejadian'      => 'sometimes|required|date',
             'lokasi_kejadian'       => 'sometimes|required|string|max:255',
             'isi_laporan'           => 'sometimes|required|string',
@@ -120,13 +124,15 @@ class AdminController extends Controller
             'kategori_lainnya'      => 'nullable|string|max:200',
         ]);
 
-        if ($request->kategori_laporan === 'Lainnya' && $request->filled('kategori_lainnya')) {
-            if (isset($validatedData['isi_laporan']) && !str_contains($validatedData['isi_laporan'], '⚠️ [SPESIFIKASI KATEGORI]:')) {
-                $validatedData['isi_laporan'] = "⚠️ [SPESIFIKASI KATEGORI]: " . strtoupper($request->kategori_lainnya) . "\n--------------------------------------------------\n" . $validatedData['isi_laporan'];
-            }
+        $kasus = Pengaduan::findOrFail($id);
+
+        if ($request->has('kategori_id')) {
+            $kategori = \App\Models\Kategori::find($request->kategori_id);
+            $validatedData['kategori_id'] = $request->kategori_id;
+            $validatedData['kategori_laporan'] = $kategori ? $kategori->nama_kategori : '-';
         }
 
-        $kasus = Pengaduan::findOrFail($id);
+        $kasus->update($validatedData);
 
         if ($request->hasFile('lampiran_bukti')) {
             if ($kasus->lampiran_bukti && Storage::disk('public')->exists($kasus->lampiran_bukti)) {
@@ -291,11 +297,11 @@ class AdminController extends Controller
             'nomor_hp'              => 'nullable|string|max:255',
             'email'                 => 'nullable|email|max:255',
             'judul_laporan'         => 'required|string|max:255',
-            'kategori_laporan'      => 'required|string',
+            'kategori_id'           => 'required|exists:kategoris,id',
             'tanggal_kejadian'      => 'required|date',
             'lokasi_kejadian'       => 'required|string|max:255',
             'isi_laporan'           => 'required|string',
-            'status'                => 'required|string|in:masuk,verifikasi,investigasi,selesai,ditolak',
+            'status'                => 'required|string|in:masuk,verifikasi,investigasi,tindak_lanjut,selesai,ditolak',
             'tingkat_pelanggaran'   => 'nullable|string|in:Ringan,Sedang,Berat',
             'catatan_verifikator'   => 'nullable|string',
             'alasan_penolakan'      => 'nullable|string',
@@ -314,6 +320,12 @@ class AdminController extends Controller
             'kategori_lainnya'      => 'nullable|string|max:200',
         ]);
 
+        if ($request->status === 'selesai' && empty($kasus->tindak_lanjut) && empty($request->tindak_lanjut)) {
+            return redirect()->back()->with('error', 'Gagal: Status tidak dapat diubah menjadi "Selesai" karena Tindak Lanjut belum diinput. Silakan isi Tindak Lanjut terlebih dahulu sebelum menutup kasus.');
+        }
+
+        $kategori = \App\Models\Kategori::find($request->kategori_id);
+        
         $data = [
             'kode_tiket'            => $request->kode_tiket,
             'user_id'               => $request->user_id,
@@ -322,23 +334,24 @@ class AdminController extends Controller
             'nomor_hp'              => $request->nomor_hp,
             'email'                 => $request->email,
             'judul_laporan'         => $request->judul_laporan,
-            'kategori_laporan'      => $request->kategori_laporan,
+            'kategori_id'           => $request->kategori_id,
+            'kategori_laporan'      => $kategori ? $kategori->nama_kategori : '-',
             'tanggal_kejadian'      => $request->tanggal_kejadian,
             'lokasi_kejadian'       => $request->lokasi_kejadian,
-            'isi_laporan'           => ($request->kategori_laporan === 'Lainnya' && $request->filled('kategori_lainnya') && !str_contains($request->isi_laporan, '⚠️ [SPESIFIKASI KATEGORI]:')) ? "⚠️ [SPESIFIKASI KATEGORI]: " . strtoupper($request->kategori_lainnya) . "\n--------------------------------------------------\n" . $request->isi_laporan : $request->isi_laporan,
+            'isi_laporan'           => $request->isi_laporan,
             'status'                => $request->status,
             'tingkat_pelanggaran'   => $request->tingkat_pelanggaran,
             'catatan_verifikator'   => $request->catatan_verifikator,
             'alasan_penolakan'      => $request->alasan_penolakan,
             'investigator_id'       => $request->investigator_id,
             'pesan_susulan'         => $request->pesan_susulan,
-            'hasil_investigasi'     => $request->hasil_investigasi,
-            'fakta_lapangan'        => $request->fakta_lapangan,
-            'pihak_terlibat'        => $request->pihak_terlibat,
-            'kesimpulan'            => $request->kesimpulan,
-            'tindak_lanjut'         => $request->tindak_lanjut,
-            'pihak_penindak'        => $request->pihak_penindak,
-            'tanggal_tindak_lanjut' => $request->tanggal_tindak_lanjut,
+            'hasil_investigasi'     => $request->has('hasil_investigasi') ? $request->hasil_investigasi : $kasus->hasil_investigasi,
+            'fakta_lapangan'        => $request->has('fakta_lapangan') ? $request->fakta_lapangan : $kasus->fakta_lapangan,
+            'pihak_terlibat'        => $request->has('pihak_terlibat') ? $request->pihak_terlibat : $kasus->pihak_terlibat,
+            'kesimpulan'            => $request->has('kesimpulan') ? $request->kesimpulan : $kasus->kesimpulan,
+            'tindak_lanjut'         => $request->has('tindak_lanjut') ? $request->tindak_lanjut : $kasus->tindak_lanjut,
+            'pihak_penindak'        => $request->has('pihak_penindak') ? $request->pihak_penindak : $kasus->pihak_penindak,
+            'tanggal_tindak_lanjut' => $request->has('tanggal_tindak_lanjut') ? $request->tanggal_tindak_lanjut : $kasus->tanggal_tindak_lanjut,
         ];
 
         // Handle file uploads
@@ -675,6 +688,10 @@ class AdminController extends Controller
             case 'master_pegawai':
                 $title = "LAPORAN REKAPITULASI MASTER DATA PEGAWAI";
                 $data = Pegawai::with('user')->latest()->get();
+                break;
+            case 'kategori':
+                $title = "LAPORAN REKAPITULASI KATEGORI PELANGGARAN";
+                $data = \App\Models\Kategori::with('pengaduans')->latest()->get();
                 break;
 
             default:

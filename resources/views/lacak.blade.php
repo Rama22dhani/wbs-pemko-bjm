@@ -115,18 +115,18 @@
                     @else
                         <div class="flex items-start mb-10 relative z-10">
                             <div class="flex-shrink-0 w-14 flex justify-center">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center {{ in_array($laporan->status, ['investigasi', 'selesai']) ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)]' : 'bg-gray-700 border border-gray-600' }}">
-                                    @if(in_array($laporan->status, ['investigasi', 'selesai']))
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center {{ in_array($laporan->status, ['investigasi', 'tindak_lanjut', 'selesai']) ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)]' : 'bg-gray-700 border border-gray-600' }}">
+                                    @if(in_array($laporan->status, ['investigasi', 'tindak_lanjut', 'selesai']))
                                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                     @else
                                         <span class="text-gray-400 text-xs font-bold">2</span>
                                     @endif
                                 </div>
                             </div>
-                            <div class="ml-4 bg-bjm-blue/50 p-4 rounded-xl border border-gray-700 w-full {{ in_array($laporan->status, ['investigasi', 'selesai']) ? '' : 'opacity-60' }}">
-                                <h4 class="font-bold {{ in_array($laporan->status, ['investigasi', 'selesai']) ? 'text-green-400' : 'text-gray-400' }} text-lg">Verifikasi & Investigasi</h4>
+                            <div class="ml-4 bg-bjm-blue/50 p-4 rounded-xl border border-gray-700 w-full {{ in_array($laporan->status, ['investigasi', 'tindak_lanjut', 'selesai']) ? '' : 'opacity-60' }}">
+                                <h4 class="font-bold {{ in_array($laporan->status, ['investigasi', 'tindak_lanjut', 'selesai']) ? 'text-green-400' : 'text-gray-400' }} text-lg">Verifikasi & Investigasi</h4>
                                 <p class="text-sm text-gray-400 mt-1">
-                                    @if(in_array($laporan->status, ['investigasi', 'selesai']))
+                                    @if(in_array($laporan->status, ['investigasi', 'tindak_lanjut', 'selesai']))
                                         Sedang ditangani oleh Investigator: <span class="text-white font-semibold">{{ $laporan->investigator->name ?? 'Tim Lapangan' }}</span>
                                     @else
                                         Menunggu verifikasi petugas.
@@ -135,13 +135,37 @@
                             </div>
                         </div>
 
+                        <!-- Step 3: Tindak Lanjut -->
+                        <div class="flex items-start mb-10 relative z-10">
+                            <div class="flex-shrink-0 w-14 flex justify-center">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center {{ in_array($laporan->status, ['tindak_lanjut', 'selesai']) ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)]' : 'bg-gray-700 border border-gray-600' }}">
+                                    @if(in_array($laporan->status, ['tindak_lanjut', 'selesai']))
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    @else
+                                        <span class="text-gray-400 text-xs font-bold">3</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="ml-4 bg-bjm-blue/50 p-4 rounded-xl border border-gray-700 w-full {{ in_array($laporan->status, ['tindak_lanjut', 'selesai']) ? '' : 'opacity-60' }}">
+                                <h4 class="font-bold {{ in_array($laporan->status, ['tindak_lanjut', 'selesai']) ? 'text-green-400' : 'text-gray-400' }} text-lg">Menunggu Tindak Lanjut</h4>
+                                <p class="text-sm text-gray-400 mt-1">
+                                    @if(in_array($laporan->status, ['tindak_lanjut', 'selesai']))
+                                        Proses investigasi selesai. Menunggu keputusan dan penjatuhan sanksi.
+                                    @else
+                                        -
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Selesai -->
                         <div class="flex items-start relative z-10">
                             <div class="flex-shrink-0 w-14 flex justify-center">
                                 <div class="w-8 h-8 rounded-full flex items-center justify-center {{ $laporan->status == 'selesai' ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)]' : 'bg-gray-700 border border-gray-600' }}">
                                     @if($laporan->status == 'selesai')
                                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     @else
-                                        <span class="text-gray-400 text-xs font-bold">3</span>
+                                        <span class="text-gray-400 text-xs font-bold">4</span>
                                     @endif
                                 </div>
                             </div>

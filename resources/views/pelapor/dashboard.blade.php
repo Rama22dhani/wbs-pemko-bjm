@@ -154,6 +154,8 @@
                                     <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Menunggu Verifikasi</span>
                                 @elseif($laporan->status == 'investigasi')
                                     <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-200">Proses Audit</span>
+                                @elseif($laporan->status == 'tindak_lanjut')
+                                    <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-50 text-cyan-600 border border-cyan-200">Menunggu Tindak Lanjut</span>
                                 @elseif($laporan->status == 'selesai')
                                     <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">Selesai</span>
                                 @elseif($laporan->status == 'ditolak')
