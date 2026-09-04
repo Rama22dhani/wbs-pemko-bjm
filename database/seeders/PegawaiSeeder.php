@@ -10,7 +10,7 @@ class PegawaiSeeder extends Seeder
 {
     public function run(): void
     {
-        $penggunaAkses = User::whereIn('peran', ['admin', 'investigator'])->get();
+        $penggunaAkses = User::whereIn('peran', ['admin', 'investigator', 'verifikator'])->get();
 
         foreach ($penggunaAkses as $index => $user) {
             Pegawai::updateOrCreate(
@@ -20,7 +20,7 @@ class PegawaiSeeder extends Seeder
                     'nama_pegawai'       => $user->name, 
                     'status_kepegawaian' => 'PNS',
                     'asal_instansi'      => 'Dinas Kominfotik',
-                    'jabatan'            => $user->peran == 'admin' ? 'Administrator Utama' : 'Investigator Lapangan',
+                    'jabatan'            => $user->peran == 'admin' ? 'Administrator Utama' : ($user->peran == 'verifikator' ? 'Verifikator Berkas' : 'Investigator Lapangan'),
                     'nomor_hp'           => '08123456789' . $index,
                     'status_aktif'       => 'Aktif',
                 ]

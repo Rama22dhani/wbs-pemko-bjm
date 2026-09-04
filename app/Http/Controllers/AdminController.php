@@ -9,6 +9,7 @@ use App\Models\Pengaduan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Instansi;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\PengaduanExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -18,7 +19,7 @@ class AdminController extends Controller
     public function index()
     {
         // 1. DATA AKSES (Sebelumnya bernama Data Pegawai)
-        $dataPegawai = User::whereIn('peran', ['admin', 'investigator'])->latest()->get();
+        $dataPegawai = User::whereIn('peran', ['admin', 'investigator', 'verifikator'])->latest()->get();
 
         // 1-B. MASTER DATA PEGAWAI (Profil Fisik Kepegawaian Baru)
         $dataMasterPegawai = \App\Models\Pegawai::with('user')->latest()->get();
@@ -68,6 +69,9 @@ class AdminController extends Controller
         // 10. DATA KATEGORI PELANGGARAN
         $kategoris = \App\Models\Kategori::withCount('pengaduans')->latest()->get();
 
+        // 11. DATA INSTANSI
+        $instansis = Instansi::orderBy('id', 'asc')->get();
+
         return view('admin.dashboard', compact(
             'dataPegawai', 
             'dataMasterPegawai', 
@@ -79,7 +83,8 @@ class AdminController extends Controller
             'kasusPerluTindakLanjut',
             'dataTindakLanjut',
             'dataInfoTambahan',
-            'kategoris'
+            'kategoris',
+            'instansis'
         ));
     }
 
@@ -184,7 +189,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'peran' => 'required|in:admin,investigator',
+            'peran' => 'required|in:admin,investigator,verifikator',
         ]);
 
         User::create([
@@ -204,7 +209,7 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$pegawai->id,
-            'peran' => 'required|in:admin,investigator',
+            'peran' => 'required|in:admin,investigator,verifikator',
         ]);
 
         $data = [
@@ -679,7 +684,7 @@ class AdminController extends Controller
                 break;
             case 'pegawai':
                 $title = "LAPORAN REKAPITULASI DATA AKSES PENGAWAS (AKUN)";
-                $data = User::whereIn('peran', ['admin', 'investigator'])->latest()->get();
+                $data = User::whereIn('peran', ['admin', 'investigator', 'verifikator'])->latest()->get();
                 break;
             case 'pengguna':
                 $title = "LAPORAN REKAPITULASI DATA PELAPOR";
@@ -692,6 +697,10 @@ class AdminController extends Controller
             case 'kategori':
                 $title = "LAPORAN REKAPITULASI KATEGORI PELANGGARAN";
                 $data = \App\Models\Kategori::with('pengaduans')->latest()->get();
+                break;
+            case 'instansi':
+                $title = "LAPORAN DATA MASTER INSTANSI";
+                $data = Instansi::withCount('pegawais')->orderBy('id', 'asc')->get();
                 break;
 
             default:
@@ -749,7 +758,7 @@ class AdminController extends Controller
             'tanggal_lahir' => 'nullable|date',
             'alamat' => 'nullable|string',
             'status_kepegawaian' => 'required|in:PNS,PPPK,CPNS,Honorer',
-            'asal_instansi' => 'required|string|max:255',
+            'instansi_id' => 'required|exists:instansis,id',
             'jabatan' => 'required|string|max:255',
             'nomor_hp' => 'nullable|string|max:20',
             'status_aktif' => 'required|in:Aktif,Nonaktif',
@@ -771,7 +780,7 @@ class AdminController extends Controller
             'tanggal_lahir' => 'nullable|date',
             'alamat' => 'nullable|string',
             'status_kepegawaian' => 'required|in:PNS,PPPK,CPNS,Honorer',
-            'asal_instansi' => 'required|string|max:255',
+            'instansi_id' => 'required|exists:instansis,id',
             'jabatan' => 'required|string|max:255',
             'nomor_hp' => 'nullable|string|max:20',
             'status_aktif' => 'required|in:Aktif,Nonaktif',

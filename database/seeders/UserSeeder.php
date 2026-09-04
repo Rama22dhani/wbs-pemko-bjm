@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
 
         // 4. Verifikator
         User::create([
-            'name' => 'Sarah Verifikator',
+            'name' => 'Zee Verifikator',
             'email' => 'verifikator@mpdpp.banjarmasinkota.go.id',
             'peran' => 'verifikator',
             'password' => Hash::make('password'),

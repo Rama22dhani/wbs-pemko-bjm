@@ -186,6 +186,32 @@
             </tbody>
         </table>
 
+    @elseif($kategori == 'instansi')
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 45%;">Nama Instansi</th>
+                    <th style="width: 25%;">Singkatan</th>
+                    <th style="width: 25%;">Total Orang/Pegawai</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($data as $index => $d)
+                    <tr>
+                        <td class="center">{{ $index + 1 }}</td>
+                        <td><strong>{{ $d->nama_instansi }}</strong></td>
+                        <td class="center">{{ $d->singkatan ?? '-' }}</td>
+                        <td class="center"><strong>{{ $d->pegawais_count }}</strong> Orang</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="center" style="font-style: italic; color: #777; padding: 15px;">Belum ada data instansi.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+
     @else
         <table class="data-table">
             <thead>

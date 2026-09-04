@@ -18,7 +18,7 @@ class Pegawai extends Model
         'tanggal_lahir',
         'alamat',
         'status_kepegawaian',
-        'asal_instansi',
+        'instansi_id',
         'jabatan',
         'nomor_hp',
         'status_aktif',
@@ -27,5 +27,10 @@ class Pegawai extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function instansi()
+    {
+        return $this->belongsTo(Instansi::class, 'instansi_id');
     }
 }

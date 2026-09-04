@@ -148,13 +148,16 @@
                 <svg class="w-5 h-5 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path></svg>
                 Data Pegawai
             </button>
-
-
-            <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Data Layanan Pengaduan</p>
+            <button @click="tab = 'instansi'; sidebarOpen = false" :class="tab === 'instansi' ? 'bg-bjm-gold/10 text-bjm-gold border-l-4 border-bjm-gold' : 'hover:bg-slate-800 hover:text-white border-l-4 border-transparent'" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-lg text-sm font-medium transition-colors">
+                <svg class="w-5 h-5 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                Data Instansi
+            </button>
             <button @click="tab = 'kategori'; sidebarOpen = false" :class="tab === 'kategori' ? 'bg-bjm-gold/10 text-bjm-gold border-l-4 border-bjm-gold' : 'hover:bg-slate-800 hover:text-white border-l-4 border-transparent'" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-lg text-sm font-medium transition-colors">
                 <svg class="w-5 h-5 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                 Data Kategori
             </button>
+
+            <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Data Layanan Pengaduan</p>
             <button @click="tab = 'kasus'; sidebarOpen = false" :class="tab === 'kasus' ? 'bg-bjm-gold/10 text-bjm-gold border-l-4 border-bjm-gold' : 'hover:bg-slate-800 hover:text-white border-l-4 border-transparent'" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-lg text-sm font-medium transition-colors">
                 <svg class="w-5 h-5 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 Data Kasus
@@ -345,9 +348,122 @@
                     </div>
                 </div>
 
+                <!-- MENU: DATA INSTANSI -->
+                <div x-show="tab === 'instansi'" x-transition.opacity style="display: none;" 
+                    x-init="initTable()" x-data="{ ...tableManager('table-instansi', {{ count($instansis) }}), showModalInstansi: false, editModeInstansi: false, formInstansi: { id: '', nama_instansi: '', singkatan: '' } }">
+                    <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-white">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800">Master Data Instansi</h3>
+                            <span class="bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1 rounded-full mt-2 inline-block">Total: {{ count($instansis) }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('admin.rekap.cetak', 'instansi') }}" target="_blank" class="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold shadow-sm transition-all transform hover:scale-105">
+                                🖨️ Cetak Instansi
+                            </a>
+                            <button @click="showModalInstansi = true; editModeInstansi = false; formInstansi = { id: '', nama_instansi: '', singkatan: '' }" class="bg-gradient-to-r from-bjm-gold to-amber-500 hover:from-amber-600 hover:to-amber-600 text-white text-xs font-bold px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all transform hover:scale-105 shadow-md shadow-amber-500/20">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                Tambah Instansi
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="px-4 py-2.5 bg-white border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600">
+                        <div class="flex items-center gap-1.5 font-medium">
+                            <span>Tampilkan</span>
+                            <select x-model="perPage" @change="updateTable()" class="bg-white border border-slate-300 rounded px-2.5 py-1 text-xs font-semibold focus:border-bjm-gold outline-none">
+                                <option value="5">5</option><option value="10">10</option><option value="25">25</option><option value="50">50</option>
+                            </select>
+                            <span>data</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="font-semibold text-slate-600">Cari Instansi:</label>
+                            <input type="text" x-model="search" @input="updateTable()" placeholder="Ketik nama instansi..." class="bg-white border border-slate-300 rounded px-3 py-1.5 text-xs focus:border-bjm-gold outline-none w-52 sm:w-64">
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table id="table-instansi" class="w-full text-left border-collapse border border-slate-200">
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-bold tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 text-center w-14">No</th>
+                                    <th class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-instansi', 1)">Nama Instansi <span class="text-slate-400">⇅</span></th>
+                                    <th class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-instansi', 2)">Singkatan <span class="text-slate-400">⇅</span></th>
+                                    <th class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 text-center pr-6">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-xs">
+                                @foreach($instansis as $inst)
+                                <tr data-row="true" class="odd:bg-white even:bg-slate-50/60 hover:bg-slate-50 transition">
+                                    <td class="px-3.5 py-2.5 font-mono text-slate-600 text-center col-no">{{ $loop->iteration }}</td>
+                                    <td class="px-3.5 py-2.5 font-bold text-slate-800">{{ $inst->nama_instansi }}</td>
+                                    <td class="px-3.5 py-2.5 text-slate-700">{{ $inst->singkatan ?? '-' }}</td>
+                                    <td class="px-3.5 py-2.5 text-center pr-6">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button @click="showModalInstansi = true; editModeInstansi = true; formInstansi = { 
+                                                id: '{{ $inst->id }}', nama_instansi: '{{ addslashes($inst->nama_instansi) }}', singkatan: '{{ addslashes($inst->singkatan) }}' 
+                                            }" class="p-1.5 bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white rounded-md transition-all shadow-xs" title="Edit Data">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            </button>
+                                            <form action="{{ route('instansi.destroy', $inst->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus instansi ini?');">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="p-1.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-md transition-all shadow-xs" title="Hapus Data">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600">
+                        <div class="font-medium">
+                            Menampilkan <span class="font-bold text-slate-800" x-text="startIndex"></span> sampai <span class="font-bold text-slate-800" x-text="endIndex"></span> dari <span class="font-bold text-slate-800" x-text="filteredCount"></span> total data
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button type="button" @click="prevPage()" :disabled="currentPage <= 1" class="px-3 py-1 border border-slate-300 rounded bg-white hover:bg-slate-100 disabled:opacity-50">Sebelumnya</button>
+                            <template x-for="p in totalPages" :key="p">
+                                <button type="button" @click="goToPage(p)" :class="currentPage === p ? 'bg-amber-500 text-white font-bold' : 'bg-white text-slate-700 hover:bg-slate-100'" class="px-3 py-1 border border-slate-300 rounded text-xs transition" x-text="p"></button>
+                            </template>
+                            <button type="button" @click="nextPage()" :disabled="currentPage >= totalPages" class="px-3 py-1 border border-slate-300 rounded bg-white hover:bg-slate-100 disabled:opacity-50">Selanjutnya</button>
+                        </div>
+                    </div>
+
+                    <!-- Modal Instansi -->
+                    <div x-show="showModalInstansi" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4" style="display: none;">
+                        <div @click.away="showModalInstansi = false" class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden transform transition-all max-h-[90vh] flex flex-col">
+                            <div class="bg-bjm-dark p-5 border-b-4 border-bjm-gold flex justify-between items-center sticky top-0 z-10">
+                                <h3 class="text-white font-bold text-lg" x-text="editModeInstansi ? 'Edit Master Data Instansi' : 'Tambah Instansi Baru'"></h3>
+                                <button @click="showModalInstansi = false" class="text-slate-300 hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                            </div>
+                            <form :action="editModeInstansi ? '/instansi/' + formInstansi.id : '{{ route('instansi.store') }}'" method="POST" class="p-6 overflow-y-auto">
+                                @csrf
+                                <input type="hidden" name="_method" value="PUT" x-bind:disabled="!editModeInstansi">
+                                
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Nama Resmi Instansi <span class="text-red-500">*</span></label>
+                                        <input type="text" name="nama_instansi" x-model="formInstansi.nama_instansi" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 focus:border-bjm-gold outline-none" placeholder="Misal: Dinas Komunikasi, Informatika dan Statistik">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Singkatan</label>
+                                        <input type="text" name="singkatan" x-model="formInstansi.singkatan" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 focus:border-bjm-gold outline-none" placeholder="Misal: Diskominfotik">
+                                    </div>
+                                </div>
+                                <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-100">
+                                    <button type="button" @click="showModalInstansi = false" class="px-5 py-2 rounded-lg font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 transition">Batal</button>
+                                    <button type="submit" class="px-5 py-2 rounded-lg font-bold text-white bg-gradient-to-r from-bjm-gold to-amber-500 hover:from-amber-600 hover:to-amber-600 transition shadow-md shadow-amber-500/30">
+                                        Simpan Data
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- MENU 0: MASTER DATA PEGAWAI (BARU) -->
                 <div x-show="tab === 'master_pegawai'" x-transition.opacity style="display: none;" 
-                    x-init="initTable()" x-data="{ ...tableManager('table-master-pegawai', {{ count($dataMasterPegawai) }}), showModalMaster: false, editModeMaster: false, formMaster: { id: '', user_id: '', nip: '', nama_pegawai: '', jenis_kelamin: 'Laki-laki', tempat_lahir: '', tanggal_lahir: '', alamat: '', status_kepegawaian: 'PNS', asal_instansi: '', jabatan: '', nomor_hp: '', status_aktif: 'Aktif' } }">
+                    x-init="initTable()" x-data="{ ...tableManager('table-master-pegawai', {{ count($dataMasterPegawai) }}), showModalMaster: false, editModeMaster: false, formMaster: { id: '', user_id: '', nip: '', nama_pegawai: '', jenis_kelamin: 'Laki-laki', tempat_lahir: '', tanggal_lahir: '', alamat: '', status_kepegawaian: 'PNS', instansi_id: '', jabatan: '', nomor_hp: '', status_aktif: 'Aktif' } }">
                     <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-white">
                         <div>
                             <h3 class="text-lg font-bold text-slate-800">Master Data Pegawai</h3>
@@ -357,7 +473,7 @@
                             <a href="{{ route('admin.rekap.cetak', 'master_pegawai') }}" target="_blank" class="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold shadow-sm transition-all transform hover:scale-105">
                                 🖨️ Cetak Pegawai
                             </a>
-                            <button @click="showModalMaster = true; editModeMaster = false; formMaster = { id: '', user_id: '', nip: '', nama_pegawai: '', jenis_kelamin: 'Laki-laki', tempat_lahir: '', tanggal_lahir: '', alamat: '', status_kepegawaian: 'PNS', asal_instansi: '', jabatan: '', nomor_hp: '', status_aktif: 'Aktif' }" class="bg-gradient-to-r from-bjm-gold to-amber-500 hover:from-amber-600 hover:to-amber-600 text-white text-xs font-bold px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all transform hover:scale-105 shadow-md shadow-amber-500/20">
+                            <button @click="showModalMaster = true; editModeMaster = false; formMaster = { id: '', user_id: '', nip: '', nama_pegawai: '', jenis_kelamin: 'Laki-laki', tempat_lahir: '', tanggal_lahir: '', alamat: '', status_kepegawaian: 'PNS', instansi_id: '', jabatan: '', nomor_hp: '', status_aktif: 'Aktif' }" class="bg-gradient-to-r from-bjm-gold to-amber-500 hover:from-amber-600 hover:to-amber-600 text-white text-xs font-bold px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all transform hover:scale-105 shadow-md shadow-amber-500/20">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                 Tambah Data Pegawai
                             </button>
@@ -400,7 +516,7 @@
                                     <td class="px-3.5 py-2.5">
                                         <span class="px-2.5 py-1 rounded text-[10px] uppercase font-bold border {{ $mp->status_kepegawaian == 'PNS' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-slate-100 text-slate-700 border-slate-200' }}">{{ $mp->status_kepegawaian }}</span>
                                     </td>
-                                    <td class="px-3.5 py-2.5 text-xs text-slate-600">{{ $mp->asal_instansi }}</td>
+                                    <td class="px-3.5 py-2.5 text-xs text-slate-600">{{ $mp->instansi->nama_instansi ?? '-' }}</td>
                                     <td class="px-3.5 py-2.5 text-slate-700">{{ $mp->jabatan }}</td>
                                     <td class="px-3.5 py-2.5 text-center">
                                         @if($mp->user)
@@ -416,7 +532,7 @@
                                     <td class="px-3.5 py-2.5 text-center pr-6">
                                         <div class="flex items-center justify-center gap-2">
                                             <button @click="showModalMaster = true; editModeMaster = true; formMaster = { 
-                                                id: '{{ $mp->id }}', user_id: '{{ $mp->user_id }}', nip: '{{ $mp->nip }}', nama_pegawai: '{{ addslashes($mp->nama_pegawai) }}', jenis_kelamin: '{{ $mp->jenis_kelamin }}', tempat_lahir: '{{ addslashes($mp->tempat_lahir) }}', tanggal_lahir: '{{ $mp->tanggal_lahir }}', alamat: '{{ addslashes(preg_replace('/\r|\n/', ' ', $mp->alamat)) }}', status_kepegawaian: '{{ $mp->status_kepegawaian }}', asal_instansi: '{{ addslashes($mp->asal_instansi) }}', jabatan: '{{ addslashes($mp->jabatan) }}', nomor_hp: '{{ $mp->nomor_hp }}', status_aktif: '{{ $mp->status_aktif }}' 
+                                                id: '{{ $mp->id }}', user_id: '{{ $mp->user_id }}', nip: '{{ $mp->nip }}', nama_pegawai: '{{ addslashes($mp->nama_pegawai) }}', jenis_kelamin: '{{ $mp->jenis_kelamin }}', tempat_lahir: '{{ addslashes($mp->tempat_lahir) }}', tanggal_lahir: '{{ $mp->tanggal_lahir }}', alamat: '{{ addslashes(preg_replace('/\r|\n/', ' ', $mp->alamat)) }}', status_kepegawaian: '{{ $mp->status_kepegawaian }}', instansi_id: '{{ $mp->instansi_id }}', jabatan: '{{ addslashes($mp->jabatan) }}', nomor_hp: '{{ $mp->nomor_hp }}', status_aktif: '{{ $mp->status_aktif }}' 
                                             }" class="p-1.5 bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white rounded-md transition-all shadow-xs" title="Edit Data">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                             </button>
@@ -497,7 +613,12 @@
                                     </div>
                                     <div>
                                         <label class="block text-lg font-bold text-slate-700 mb-1">Asal Instansi <span class="text-red-500">*</span></label>
-                                        <input type="text" name="asal_instansi" x-model="formMaster.asal_instansi" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 focus:border-bjm-gold outline-none">
+                                        <select name="instansi_id" x-model="formMaster.instansi_id" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 focus:border-bjm-gold outline-none">
+                                            <option value="">-- Pilih Instansi --</option>
+                                            @foreach($instansis as $inst)
+                                                <option value="{{ $inst->id }}">{{ $inst->nama_instansi }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                     <div>
                                         <label class="block text-lg font-bold text-slate-700 mb-1">Jabatan <span class="text-red-500">*</span></label>
@@ -541,7 +662,10 @@
                             <h3 class="text-lg font-bold text-slate-800">Master Data Kategori</h3>
                             <span class="bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1 rounded-full mt-2 inline-block">Total: {{ count($kategoris) }}</span>
                         </div>
-                        <div>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('admin.rekap.cetak', 'kategori') }}" target="_blank" class="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold shadow-sm transition-all transform hover:scale-105">
+                                🖨️ Cetak Kategori
+                            </a>
                             <button @click="showModal = true; editMode = false; form = { id: '', nama_kategori: '', deskripsi: '' }" class="bg-gradient-to-r from-bjm-gold to-amber-500 hover:from-amber-600 hover:to-amber-600 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md shadow-amber-500/20 transform hover:scale-105">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                 Tambah Kategori
@@ -707,7 +831,7 @@
                                     <td  class="px-3.5 py-2.5 font-semibold text-slate-800 border border-slate-200">{{ $p->name }}</td>
                                     <td  class="px-3.5 py-2.5 text-slate-500 font-medium border border-slate-200">{{ $p->email }}</td>
                                     <td  class="px-3.5 py-2.5 border border-slate-200">
-                                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">{{ strtoupper(str_replace('_', ' ', $p->peran)) }}</span>
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $p->peran == 'admin' ? 'bg-amber-50 text-amber-700 border-amber-200' : ($p->peran == 'verifikator' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-blue-50 text-blue-700 border-blue-200') }}">{{ strtoupper(str_replace('_', ' ', $p->peran)) }}</span>
                                     </td>
                                     <td  class="px-3.5 py-2.5 text-center border border-slate-200">
                                         <div class="flex items-center justify-center gap-2">
@@ -765,6 +889,7 @@
                                         <label class="block text-lg font-bold text-slate-700 mb-1">Peran Akses Sistem</label>
                                         <select name="peran" x-model="form.peran" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 focus:border-bjm-gold outline-none">
                                             <option value="investigator">Investigator (Tim Lapangan)</option>
+                                            <option value="verifikator">Verifikator</option>
                                             <option value="admin">Administrator</option>
                                         </select>
                                     </div>
@@ -2013,6 +2138,38 @@
                                         🖨️ Cetak Rekap Pegawai
                                     </a>
                                 </div>
+
+                                <!-- Card: Data Instansi -->
+                                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center gap-3 mb-3">
+                                            <div class="p-2.5 bg-sky-50 text-sky-600 rounded-lg text-lg">
+                                                🏢
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-sm">Data Instansi</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-500 leading-relaxed mb-5">Daftar instansi atau SKPD di lingkungan pemerintah kota yang terdaftar dalam sistem.</p>
+                                    </div>
+                                    <a href="{{ route('admin.rekap.cetak', 'instansi') }}" target="_blank" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
+                                        🖨️ Cetak Rekap Instansi
+                                    </a>
+                                </div>
+
+                                <!-- Card: Data Kategori -->
+                                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center gap-3 mb-3">
+                                            <div class="p-2.5 bg-rose-50 text-rose-600 rounded-lg text-lg">
+                                                📑
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-sm">Data Kategori</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-500 leading-relaxed mb-5">Rekapitulasi agregasi seluruh kategori pelanggaran beserta rincian status penanganannya.</p>
+                                    </div>
+                                    <a href="{{ route('admin.rekap.cetak', 'kategori') }}" target="_blank" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
+                                        🖨️ Cetak Rekap Kategori
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
@@ -2036,38 +2193,6 @@
                                     </div>
                                     <a href="{{ route('admin.rekap.cetak', 'kasus') }}" target="_blank" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
                                         🖨️ Cetak Rekap Kasus
-                                    </a>
-                                </div>
-
-                                <!-- Card: Data Kategori -->
-                                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex items-center gap-3 mb-3">
-                                            <div class="p-2.5 bg-rose-50 text-rose-600 rounded-lg text-lg">
-                                                📑
-                                            </div>
-                                            <h4 class="font-bold text-slate-800 text-sm">Data Kategori</h4>
-                                        </div>
-                                        <p class="text-xs text-slate-500 leading-relaxed mb-5">Rekapitulasi agregasi seluruh kategori pelanggaran beserta rincian status penanganannya.</p>
-                                    </div>
-                                    <a href="{{ route('admin.rekap.cetak', 'kategori') }}" target="_blank" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
-                                        🖨️ Cetak Rekap Kategori
-                                    </a>
-                                </div>
-
-                                <!-- Card: Info Tambahan -->
-                                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex items-center gap-3 mb-3">
-                                            <div class="p-2.5 bg-teal-50 text-teal-600 rounded-lg text-lg">
-                                                💬
-                                            </div>
-                                            <h4 class="font-bold text-slate-800 text-sm">Informasi Susulan Pelapor</h4>
-                                        </div>
-                                        <p class="text-xs text-slate-500 leading-relaxed mb-5">Rekapitulasi pesan tambahan dan berkas susulan yang dikirimkan oleh pelapor.</p>
-                                    </div>
-                                    <a href="{{ route('admin.rekap.cetak', 'tanggapan') }}" target="_blank" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
-                                        🖨️ Cetak Rekap Info
                                     </a>
                                 </div>
 
@@ -2116,6 +2241,22 @@
                                     </div>
                                     <a href="{{ route('admin.rekap.cetak', 'bukti') }}" target="_blank" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
                                         🖨️ Cetak Rekap Bukti
+                                    </a>
+                                </div>
+
+                                <!-- Card: Info Tambahan -->
+                                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center gap-3 mb-3">
+                                            <div class="p-2.5 bg-teal-50 text-teal-600 rounded-lg text-lg">
+                                                💬
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-sm">Informasi Susulan Pelapor</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-500 leading-relaxed mb-5">Rekapitulasi pesan tambahan dan berkas susulan yang dikirimkan oleh pelapor.</p>
+                                    </div>
+                                    <a href="{{ route('admin.rekap.cetak', 'tanggapan') }}" target="_blank" class="w-full text-center inline-flex justify-center items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
+                                        🖨️ Cetak Rekap Info
                                     </a>
                                 </div>
 

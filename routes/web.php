@@ -127,7 +127,9 @@ Route::middleware('auth')->group(function () {
         Route::put('/admin/pengguna/{id}', [AdminController::class, 'updatePengguna'])->name('admin.pengguna.update');
         Route::delete('/admin/pengguna/{id}', [AdminController::class, 'destroyPengguna'])->name('admin.pengguna.destroy');
         // Route Master Kategori Pelanggaran
-    Route::resource('kategori', KategoriController::class)->except(['index', 'create', 'edit', 'show']);
+        Route::resource('kategori', KategoriController::class)->except(['index', 'create', 'edit', 'show']);
+        // Route Master Data Instansi
+        Route::resource('instansi', App\Http\Controllers\InstansiController::class)->except(['index', 'create', 'edit', 'show']);
     });
 
     // 4. Route Profile Bawaan
