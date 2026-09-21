@@ -1089,15 +1089,19 @@
                                     <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 0)">Kode Kasus <span class="text-slate-400">⇅</span></th>
                                     <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 1)">Pelapor <span class="text-slate-400">⇅</span></th>
                                     <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 2)">Judul Laporan <span class="text-slate-400">⇅</span></th>
-                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 3)">Tingkat <span class="text-slate-400">⇅</span></th>
-                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 4)">Status <span class="text-slate-400">⇅</span></th>
-                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 5)">Aksi <span class="text-slate-400">⇅</span></th>
+                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 3)">Tgl Masuk <span class="text-slate-400">⇅</span></th>
+                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 4)">Lokasi <span class="text-slate-400">⇅</span></th>
+                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 5)">Deskripsi <span class="text-slate-400">⇅</span></th>
+                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 6)">Tingkat <span class="text-slate-400">⇅</span></th>
+                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 7)">Status <span class="text-slate-400">⇅</span></th>
+                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-kasus', 8)">Lampiran <span class="text-slate-400">⇅</span></th>
+                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 text-center whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-xs">
                                 @forelse($dataKasus as $k)
                                 <tr data-row="true" class="odd:bg-white even:bg-slate-50/60 hover:bg-slate-50 transition">
-                                    <td  class="px-3.5 py-2.5 font-mono font-bold text-slate-700 border border-slate-200">
+                                    <td  class="px-3.5 py-2.5 font-mono font-bold text-slate-700 border border-slate-200 whitespace-nowrap">
                                         {{ $k->kode_tiket }}
                                         @if($k->pesan_susulan)
                                             <span class="block mt-1 text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded border border-blue-200 font-bold w-max">
@@ -1105,10 +1109,25 @@
                                             </span>
                                         @endif
                                     </td>
-                                    <td  class="px-3.5 py-2.5 text-slate-700 font-medium border border-slate-200">{{ $k->user->name ?? 'Anonim' }}</td>
-                                    <td  class="px-3.5 py-2.5 text-slate-600 border border-slate-200">{{ Str::limit($k->judul_laporan, 30) }}</td>
+                                    <td  class="px-3.5 py-2.5 text-slate-700 font-medium border border-slate-200 whitespace-nowrap">{{ $k->user->name ?? ($k->nama_pelapor ?: 'Anonim') }}</td>
+                                    <td  class="px-3.5 py-2.5 text-slate-700 font-medium border border-slate-200 max-w-[180px]" title="{{ $k->judul_laporan }}">{{ Str::limit($k->judul_laporan, 28) }}</td>
+                                    <td  class="px-3.5 py-2.5 text-slate-600 border border-slate-200 whitespace-nowrap">
+                                        <div class="flex items-center gap-1.5 text-slate-700">
+                                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            <span class="text-xs">{{ \Carbon\Carbon::parse($k->created_at)->format('d/m/Y') }}</span>
+                                        </div>
+                                    </td>
+                                    <td  class="px-3.5 py-2.5 text-slate-600 border border-slate-200 whitespace-nowrap" title="{{ $k->lokasi_kejadian }}">
+                                        <div class="flex items-center gap-1.5 text-slate-700">
+                                            <svg class="w-3.5 h-3.5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                            <span class="text-xs">{{ Str::limit($k->lokasi_kejadian ?? '-', 22) }}</span>
+                                        </div>
+                                    </td>
+                                    <td  class="px-3.5 py-2.5 text-slate-600 border border-slate-200 max-w-[200px]" title="{{ $k->isi_laporan }}">
+                                        <span class="line-clamp-2 text-[11px] leading-snug">{{ $k->isi_laporan ?: '-' }}</span>
+                                    </td>
                                     
-                                    <td  class="px-3.5 py-2.5 border border-slate-200">
+                                    <td  class="px-3.5 py-2.5 border border-slate-200 whitespace-nowrap">
                                         @if($k->tingkat_pelanggaran)
                                             <span class="px-2.5 py-1 text-[10px] uppercase rounded font-bold border 
                                                 {{ $k->tingkat_pelanggaran == 'Berat' ? 'bg-red-50 text-red-600 border-red-200' : 
@@ -1121,7 +1140,7 @@
                                         @endif
                                     </td>
 
-                                    <td  class="px-3.5 py-2.5 border border-slate-200">
+                                    <td  class="px-3.5 py-2.5 border border-slate-200 whitespace-nowrap">
                                         <span class="px-3 py-1 text-[11px] uppercase rounded-full font-bold border 
                                             {{ $k->status == 'selesai' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 
                                                 ($k->status == 'tindak_lanjut' ? 'bg-cyan-50 text-cyan-700 border-cyan-200' :
@@ -1130,8 +1149,37 @@
                                             {{ $k->status == 'tindak_lanjut' ? 'menunggu tindak lanjut' : $k->status }}
                                         </span>
                                     </td>
-                                    <td  class="px-3.5 py-2.5 text-center border border-slate-200">
-                                        <div class="flex items-center justify-center gap-1.5 flex-wrap">
+
+                                    <td  class="px-3.5 py-2.5 border border-slate-200 whitespace-nowrap">
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            @if($k->lampiran_bukti)
+                                                @php
+                                                    $extB = strtolower(pathinfo($k->lampiran_bukti, PATHINFO_EXTENSION));
+                                                @endphp
+                                                @if($extB === 'pdf')
+                                                    <a href="{{ asset('storage/' . $k->lampiran_bukti) }}" target="_blank" class="text-[11px] font-bold text-rose-600 hover:underline inline-flex items-center gap-1 bg-rose-50 px-2 py-1 rounded border border-rose-200" title="Dokumen PDF Bukti Awal">📄 PDF</a>
+                                                @elseif(in_array($extB, ['doc', 'docx']))
+                                                    <a href="{{ asset('storage/' . $k->lampiran_bukti) }}" target="_blank" class="text-[11px] font-bold text-blue-600 hover:underline inline-flex items-center gap-1 bg-blue-50 px-2 py-1 rounded border border-blue-200" title="Dokumen Word Bukti Awal">📝 Word</a>
+                                                @elseif(in_array($extB, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
+                                                    <a href="{{ asset('storage/' . $k->lampiran_bukti) }}" target="_blank" class="text-[11px] font-bold text-emerald-600 hover:underline inline-flex items-center gap-1 bg-emerald-50 px-2 py-1 rounded border border-emerald-200" title="Gambar Foto Bukti Awal">🖼️ Foto</a>
+                                                @else
+                                                    <a href="{{ asset('storage/' . $k->lampiran_bukti) }}" target="_blank" class="text-[11px] font-bold text-slate-600 hover:underline inline-flex items-center gap-1 bg-slate-100 px-2 py-1 rounded border border-slate-200" title="Berkas File Bukti Awal">📁 File</a>
+                                                @endif
+                                            @endif
+                                            @if($k->lampiran_susulan)
+                                                @php
+                                                    $urlSusulan = \Illuminate\Support\Str::startsWith($k->lampiran_susulan, ['bukti_susulan/', 'bukti_pengaduan/']) ? asset('storage/' . $k->lampiran_susulan) : asset('uploads/pengaduan/' . $k->lampiran_susulan);
+                                                @endphp
+                                                <a href="{{ $urlSusulan }}" target="_blank" class="text-[11px] font-bold text-amber-600 hover:underline inline-flex items-center gap-1 bg-amber-50 px-2 py-1 rounded border border-amber-200" title="Berkas Bukti Susulan">📎 Susulan</a>
+                                            @endif
+                                            @if(!$k->lampiran_bukti && !$k->lampiran_susulan)
+                                                <span class="text-slate-400 italic text-[11px]">-</span>
+                                            @endif
+                                        </div>
+                                    </td>
+
+                                    <td  class="px-3.5 py-2.5 text-center border border-slate-200 whitespace-nowrap">
+                                        <div class="inline-flex items-center justify-center gap-1.5">
                                             
                                             <!-- Tombol Verifikasi dipindah ke Verifikator -->
 
@@ -1171,7 +1219,7 @@
                                             }' class="p-1.5 bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white rounded-md transition-all shadow-xs" title="Edit Kasus Manual">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                             </button>
-                                            <form action="{{ route('admin.kasus.destroy', $k->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus kasus ini secara permanen?');">
+                                            <form action="{{ route('admin.kasus.destroy', $k->id) }}" method="POST" class="inline-flex m-0 p-0" onsubmit="return confirm('Yakin ingin menghapus kasus ini secara permanen?');">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="p-1.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-md transition-all shadow-xs" title="Hapus Permanen">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -1181,7 +1229,7 @@
                                     </td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="6"  class="p-8 text-center text-slate-500 italic border border-slate-200">Belum ada data kasus masuk.</td></tr>
+                                <tr><td colspan="10"  class="p-8 text-center text-slate-500 italic border border-slate-200">Belum ada data kasus masuk.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -1240,8 +1288,8 @@
                                             <input type="text" name="nama_pelapor" x-model="formKasus.nama_pelapor" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-bjm-gold outline-none">
                                         </div>
                                         <div>
-                                            <label class="block text-xs font-bold text-slate-700 mb-1">NIP Pelapor</label>
-                                            <input type="text" name="nip" x-model="formKasus.nip" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-bjm-gold outline-none">
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">NIP Terlapor</label>
+                                            <input type="text" name="nip" x-model="formKasus.nip" placeholder="Ketik NIP terlapor (Opsional)" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-bjm-gold outline-none">
                                         </div>
                                         <div>
                                             <label class="block text-xs font-bold text-slate-700 mb-1">Nomor HP Pelapor</label>
@@ -1441,7 +1489,7 @@
 
                 <!-- MENU 4: INVESTIGASI -->
                 <div x-show="tab === 'investigasi'" x-transition.opacity style="display: none;"
-                    x-init="initTable()" x-data="{ ...tableManager('table-investigasi', {{ count($dataKasus) }}),  showModalEditInvestigasi: false, formInvestigasi: { id: '', fakta_lapangan: '', pihak_terlibat: '', kesimpulan: '', investigator_id: '', bukti_investigasi_url: '', delete_bukti_investigasi: 0 } }">
+                    x-init="initTable()" x-data="{ ...tableManager('table-investigasi', {{ count($dataInvestigasi) }}),  showModalEditInvestigasi: false, formInvestigasi: { id: '', instansi_id: '', fakta_lapangan: '', pihak_terlibat: '', kesimpulan: '', investigator_id: '', bukti_investigasi_url: '', delete_bukti_investigasi: 0 } }">
                     <div class="px-6 py-4 border-b border-slate-200 bg-white flex justify-between items-center">
                         <h3 class="text-lg font-bold text-slate-800">Data Kertas Kerja Investigasi</h3>
                         <a href="{{ route('admin.rekap.cetak', 'investigasi') }}" target="_blank" class="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold shadow-sm transition-all transform hover:scale-105">
@@ -1469,15 +1517,49 @@
                                     <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-investigasi', 0)">Kode Kasus <span class="text-slate-400">⇅</span></th>
                                     <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-investigasi', 1)">Investigator Lapangan <span class="text-slate-400">⇅</span></th>
                                     <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-investigasi', 2)">Fakta Temuan <span class="text-slate-400">⇅</span></th>
-                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-investigasi', 3)">Aksi <span class="text-slate-400">⇅</span></th>
+                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-investigasi', 3)">Pihak Terlibat / Saksi <span class="text-slate-400">⇅</span></th>
+                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-investigasi', 4)">Kesimpulan <span class="text-slate-400">⇅</span></th>
+                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-investigasi', 5)">Lampiran <span class="text-slate-400">⇅</span></th>
+                                    <th  class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-xs">
                                 @forelse($dataInvestigasi as $i)
                                 <tr data-row="true" class="odd:bg-white even:bg-slate-50/60 hover:bg-slate-50 transition">
-                                    <td  class="px-3.5 py-2.5 font-mono font-bold text-slate-600 border border-slate-200">{{ $i->kode_tiket }}</td>
-                                    <td  class="px-3.5 py-2.5 text-slate-800 font-medium border border-slate-200">{{ $i->investigator->name ?? 'Tim Lapangan' }}</td>
-                                    <td  class="px-3.5 py-2.5 text-slate-600 italic border border-slate-200">"{{ Str::limit($i->fakta_lapangan ?? $i->hasil_investigasi, 40) }}"</td>
+                                    <td  class="px-3.5 py-2.5 font-mono font-bold text-slate-700 border border-slate-200 whitespace-nowrap">{{ $i->kode_tiket }}</td>
+                                    <td  class="px-3.5 py-2.5 text-slate-800 font-medium border border-slate-200 whitespace-nowrap">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-xs">🕵️‍♂️</span>
+                                            <span>{{ $i->investigator->name ?? 'Tim Lapangan' }}</span>
+                                        </div>
+                                    </td>
+                                    <td  class="px-3.5 py-2.5 text-slate-600 border border-slate-200 max-w-[200px]" title="{{ $i->fakta_lapangan ?? $i->hasil_investigasi }}">
+                                        <span class="line-clamp-2 text-[11px] leading-snug italic">"{{ Str::limit($i->fakta_lapangan ?? $i->hasil_investigasi ?? '-', 40) }}"</span>
+                                    </td>
+                                    <td  class="px-3.5 py-2.5 text-slate-600 border border-slate-200 max-w-[180px]" title="{{ $i->pihak_terlibat }}">
+                                        <span class="line-clamp-2 text-[11px] leading-snug">{{ $i->pihak_terlibat ?: '-' }}</span>
+                                    </td>
+                                    <td  class="px-3.5 py-2.5 text-slate-600 border border-slate-200 max-w-[200px]" title="{{ $i->kesimpulan }}">
+                                        <span class="line-clamp-2 text-[11px] leading-snug">{{ $i->kesimpulan ?: '-' }}</span>
+                                    </td>
+                                    <td  class="px-3.5 py-2.5 border border-slate-200 whitespace-nowrap">
+                                        @if($i->bukti_investigasi)
+                                            @php
+                                                $extInv = strtolower(pathinfo($i->bukti_investigasi, PATHINFO_EXTENSION));
+                                            @endphp
+                                            @if($extInv === 'pdf')
+                                                <a href="{{ asset('storage/' . $i->bukti_investigasi) }}" target="_blank" class="text-[11px] font-bold text-rose-600 hover:underline inline-flex items-center gap-1 bg-rose-50 px-2 py-1 rounded border border-rose-200" title="Dokumen PDF Bukti Investigasi">📄 PDF</a>
+                                            @elseif(in_array($extInv, ['doc', 'docx']))
+                                                <a href="{{ asset('storage/' . $i->bukti_investigasi) }}" target="_blank" class="text-[11px] font-bold text-blue-600 hover:underline inline-flex items-center gap-1 bg-blue-50 px-2 py-1 rounded border border-blue-200" title="Dokumen Word Bukti Investigasi">📝 Word</a>
+                                            @elseif(in_array($extInv, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
+                                                <a href="{{ asset('storage/' . $i->bukti_investigasi) }}" target="_blank" class="text-[11px] font-bold text-purple-600 hover:underline inline-flex items-center gap-1 bg-purple-50 px-2 py-1 rounded border border-purple-200" title="Foto Temuan Investigasi">📷 Foto</a>
+                                            @else
+                                                <a href="{{ asset('storage/' . $i->bukti_investigasi) }}" target="_blank" class="text-[11px] font-bold text-slate-600 hover:underline inline-flex items-center gap-1 bg-slate-100 px-2 py-1 rounded border border-slate-200" title="Berkas File Bukti Investigasi">📁 File</a>
+                                            @endif
+                                        @else
+                                            <span class="text-slate-400 italic text-[11px]">-</span>
+                                        @endif
+                                    </td>
                                     <td  class="px-3.5 py-2.5 text-center border border-slate-200">
                                         <div class="flex items-center justify-center gap-2">
                                             <a href="{{ route('admin.show', $i->id) }}" class="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-md transition-all shadow-xs" title="Lihat Berkas Lengkap">
@@ -1485,6 +1567,7 @@
                                             </a>
                                             <button @click='showModalEditInvestigasi = true; formInvestigasi = { 
                                                 id: {{ $i->id }}, 
+                                                instansi_id: {{ json_encode($i->instansi_id) }},
                                                 fakta_lapangan: {{ json_encode($i->fakta_lapangan) }},
                                                 pihak_terlibat: {{ json_encode($i->pihak_terlibat) }},
                                                 kesimpulan: {{ json_encode($i->kesimpulan) }},
@@ -1504,7 +1587,7 @@
                                     </td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="4"  class="p-8 text-center text-slate-500 italic border border-slate-200">Belum ada data hasil investigasi.</td></tr>
+                                <tr><td colspan="7"  class="p-8 text-center text-slate-500 italic border border-slate-200">Belum ada data hasil investigasi.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -1534,14 +1617,25 @@
                                 @method('PUT')
                                 
                                 <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-lg font-bold text-slate-700 mb-1">Investigator Lapangan <span class="text-red-500">*</span></label>
-                                        <select name="investigator_id" x-model="formInvestigasi.investigator_id" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 focus:border-bjm-gold outline-none">
-                                            <option value="">-- Pilih Investigator --</option>
-                                            @foreach($dataPegawai->where('peran', 'investigator') as $inv)
-                                                <option value="{{ $inv->id }}">{{ $inv->name }}</option>
-                                            @endforeach
-                                        </select>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-bold text-slate-700 mb-1">Investigator Lapangan <span class="text-red-500">*</span></label>
+                                            <select name="investigator_id" x-model="formInvestigasi.investigator_id" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 focus:border-bjm-gold outline-none">
+                                                <option value="">-- Pilih Investigator --</option>
+                                                @foreach($dataPegawai->where('peran', 'investigator') as $inv)
+                                                    <option value="{{ $inv->id }}">{{ $inv->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-bold text-slate-700 mb-1">Instansi Terlapor</label>
+                                            <select name="instansi_id" x-model="formInvestigasi.instansi_id" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 focus:border-bjm-gold outline-none">
+                                                <option value="">-- Pilih Instansi Terlapor --</option>
+                                                @foreach($instansis as $inst)
+                                                    <option value="{{ $inst->id }}">{{ $inst->nama_instansi }} {{ $inst->singkatan ? '('.$inst->singkatan.')' : '' }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                     <div>
                                         <label class="block text-lg font-bold text-slate-700 mb-1">Fakta di Lapangan <span class="text-red-500">*</span></label>
@@ -1586,7 +1680,7 @@
 
                 <!-- MENU 5: TINDAK LANJUT -->
                 <div x-show="tab === 'tindaklanjut'" x-transition.opacity style="display: none;"
-                    x-init="initTable()" x-data="{ ...tableManager('table-tindaklanjut', {{ count($dataTindakLanjut) }}),  showModalEditTindakLanjut: false, formTindakLanjut: { id: '', pihak_penindak: '', tanggal_tindak_lanjut: '', tindak_lanjut: '' } }">
+                    x-init="initTable()" x-data="{ ...tableManager('table-tindaklanjut', {{ count($dataTindakLanjut) }}),  showModalEditTindakLanjut: false, formTindakLanjut: { id: '', instansi_id: '', pihak_penindak: '', tanggal_tindak_lanjut: '', tindak_lanjut: '' } }">
                     <div class="px-6 py-4 border-b border-slate-200 bg-white shadow-sm flex justify-between items-center">
                         <div>
                             <h3 class="text-lg font-bold text-slate-800">Arsip Keputusan & Tindak Lanjut</h3>
@@ -1619,15 +1713,16 @@
                                     <th class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-tindaklanjut', 2)">Tingkat <span class="text-slate-400">⇅</span></th>
                                     <th class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-tindaklanjut', 3)">Instansi Penindak <span class="text-slate-400">⇅</span></th>
                                     <th class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-tindaklanjut', 4)">Tanggal Eksekusi <span class="text-slate-400">⇅</span></th>
-                                    <th class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-tindaklanjut', 5)">Aksi <span class="text-slate-400">⇅</span></th>
+                                    <th class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 cursor-pointer hover:bg-slate-200 transition" onclick="sortTable('table-tindaklanjut', 5)">Detail Keputusan <span class="text-slate-400">⇅</span></th>
+                                    <th class="px-3.5 py-2.5 text-[11px] uppercase font-bold tracking-wider border border-slate-200 text-center whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-xs">
                                 @forelse($dataTindakLanjut as $dt)
                                 <tr data-row="true" class="odd:bg-white even:bg-slate-50/60 hover:bg-slate-50 transition">
-                                    <td class="px-3.5 py-2.5 font-mono font-bold text-slate-700 border border-slate-200">{{ $dt->kode_tiket }}</td>
-                                    <td class="px-3.5 py-2.5 text-slate-600 border border-slate-200">{{ Str::limit($dt->judul_laporan, 40) }}</td>
-                                    <td class="px-3.5 py-2.5 border border-slate-200">
+                                    <td class="px-3.5 py-2.5 font-mono font-bold text-slate-700 border border-slate-200 whitespace-nowrap">{{ $dt->kode_tiket }}</td>
+                                    <td class="px-3.5 py-2.5 text-slate-600 border border-slate-200 max-w-[180px]" title="{{ $dt->judul_laporan }}">{{ Str::limit($dt->judul_laporan, 35) }}</td>
+                                    <td class="px-3.5 py-2.5 border border-slate-200 whitespace-nowrap">
                                         @if($dt->tingkat_pelanggaran)
                                             <span class="px-2.5 py-1 text-[10px] uppercase rounded font-bold border 
                                                 {{ $dt->tingkat_pelanggaran == 'Berat' ? 'bg-red-50 text-red-600 border-red-200' : 
@@ -1639,17 +1734,21 @@
                                             <span class="text-slate-400 italic text-[10px]">-</span>
                                         @endif
                                     </td>
-                                    <td class="px-3.5 py-2.5 text-slate-700 font-medium border border-slate-200">{{ $dt->pihak_penindak ?? '-' }}</td>
-                                    <td class="px-3.5 py-2.5 text-slate-600 border border-slate-200">
+                                    <td class="px-3.5 py-2.5 text-slate-700 font-medium border border-slate-200 whitespace-nowrap">{{ $dt->pihak_penindak ?? '-' }}</td>
+                                    <td class="px-3.5 py-2.5 text-slate-600 border border-slate-200 whitespace-nowrap">
                                         {{ $dt->tanggal_tindak_lanjut ? \Carbon\Carbon::parse($dt->tanggal_tindak_lanjut)->format('d M Y') : '-' }}
                                     </td>
-                                    <td class="px-3.5 py-2.5 text-center border border-slate-200">
-                                        <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                                    <td class="px-3.5 py-2.5 text-slate-600 border border-slate-200 max-w-[220px]" title="{{ $dt->tindak_lanjut }}">
+                                        <span class="line-clamp-2 text-[11px] leading-snug">{{ $dt->tindak_lanjut ?: '-' }}</span>
+                                    </td>
+                                    <td class="px-3.5 py-2.5 text-center border border-slate-200 whitespace-nowrap">
+                                        <div class="inline-flex items-center justify-center gap-1.5">
                                             <a href="{{ route('admin.show', $dt->id) }}" class="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-md transition-all shadow-xs" title="Lihat Detail Berkas">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                             </a>
                                             <button @click='showModalEditTindakLanjut = true; formTindakLanjut = { 
                                                 id: {{ $dt->id }}, 
+                                                instansi_id: {{ json_encode($dt->instansi_id) }},
                                                 judul_laporan: {{ json_encode($dt->judul_laporan) }},
                                                 kategori_id: {{ json_encode($dt->kategori_id) }},
                                                 tanggal_kejadian: "{{ $dt->tanggal_kejadian ? \Carbon\Carbon::parse($dt->tanggal_kejadian)->format('Y-m-d') : '' }}",
@@ -1672,7 +1771,7 @@
                                             }' class="p-1.5 bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white rounded-md transition-all shadow-xs" title="Edit Keputusan">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                             </button>
-                                            <form action="{{ route('admin.tindaklanjut.destroy', $dt->id) }}" method="POST" class="inline" onsubmit="return confirm('Batalkan keputusan ini? Status kasus akan kembali ke tahap Investigasi.');">
+                                            <form action="{{ route('admin.tindaklanjut.destroy', $dt->id) }}" method="POST" class="inline-flex m-0 p-0" onsubmit="return confirm('Batalkan keputusan ini? Status kasus akan kembali ke tahap Investigasi.');">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="p-1.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-md transition-all shadow-xs" title="Batalkan Keputusan">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -1682,7 +1781,7 @@
                                     </td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="6" class="p-8 text-center text-slate-500 italic border border-slate-200">Belum ada data tindak lanjut yang diinput.</td></tr>
+                                <tr><td colspan="7" class="p-8 text-center text-slate-500 italic border border-slate-200">Belum ada data tindak lanjut yang diinput.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -1753,14 +1852,25 @@
 
                                 <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl mb-4">
                                     <h4 class="text-xs font-bold text-blue-600 uppercase mb-3 border-b border-blue-200 pb-2">2. Hasil Investigasi</h4>
-                                    <div class="mb-3">
-                                        <label class="block text-xs font-bold text-slate-700 mb-1">Investigator Terkait</label>
-                                        <select name="investigator_id" x-model="formTindakLanjut.investigator_id" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-bjm-gold outline-none">
-                                            <option value="">-- Pilih Investigator --</option>
-                                            @foreach($dataPegawai->where('peran', 'investigator') as $inv)
-                                                <option value="{{ $inv->id }}">{{ $inv->name }}</option>
-                                            @endforeach
-                                        </select>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Investigator Terkait</label>
+                                            <select name="investigator_id" x-model="formTindakLanjut.investigator_id" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-bjm-gold outline-none">
+                                                <option value="">-- Pilih Investigator --</option>
+                                                @foreach($dataPegawai->where('peran', 'investigator') as $inv)
+                                                    <option value="{{ $inv->id }}">{{ $inv->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Instansi Terlapor</label>
+                                            <select name="instansi_id" x-model="formTindakLanjut.instansi_id" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-bjm-gold outline-none">
+                                                <option value="">-- Pilih Instansi Terlapor --</option>
+                                                @foreach($instansis as $inst)
+                                                    <option value="{{ $inst->id }}">{{ $inst->nama_instansi }} {{ $inst->singkatan ? '('.$inst->singkatan.')' : '' }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                                         <div>

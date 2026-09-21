@@ -356,9 +356,6 @@
                                 <td class="py-3 px-4 border-b border-slate-200">
                                     @if($km->user_id)
                                         <p class="font-bold text-slate-900 leading-tight">{{ $km->user->name }}</p>
-                                        @if($km->nip)
-                                            <p class="text-[10px] text-slate-500">NIP: {{ $km->nip }}</p>
-                                        @endif
                                         @if($km->nomor_hp)
                                             <p class="text-[10px] text-slate-500">{{ $km->nomor_hp }}</p>
                                         @endif
@@ -381,6 +378,9 @@
                                 <!-- Uraian Laporan -->
                                 <td class="py-3 px-4 border-b border-slate-200">
                                     <p class="text-slate-900 font-bold text-xs leading-snug line-clamp-1">{{ $km->judul_laporan }}</p>
+                                    @if($km->nip)
+                                        <span class="inline-block mt-0.5 text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono font-medium">NIP Terlapor: {{ $km->nip }}</span>
+                                    @endif
                                     <p class="text-slate-500 text-[11px] mt-0.5 line-clamp-2 italic">{{ $km->isi_laporan }}</p>
                                 </td>
                                 <!-- Lampiran Bukti -->
@@ -518,10 +518,17 @@
                                 </td>
                                 <!-- Kategori & Judul Perkara -->
                                 <td class="py-3 px-4 border-b border-slate-200">
-                                    <span class="py-3 px-4 border-b border-slate-200">
-                                        {{ $kpt->kategori_laporan }}
-                                    </span>
-                                    <p class="font-bold text-slate-900 leading-snug line-clamp-1">{{ $kpt->judul_laporan }}</p>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 rounded text-[10px] font-bold">
+                                            {{ $kpt->kategori_laporan }}
+                                        </span>
+                                        @if($kpt->instansi)
+                                            <span class="px-2 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded text-[10px] font-semibold flex items-center gap-1">
+                                                <span>🏢</span> {{ $kpt->instansi->nama_instansi }} {{ $kpt->instansi->singkatan ? '('.$kpt->instansi->singkatan.')' : '' }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <p class="font-bold text-slate-900 leading-snug line-clamp-1 mt-1">{{ $kpt->judul_laporan }}</p>
                                 </td>
                                 <!-- Tanggal Selesai Audit -->
                                 <td class="py-3 px-4 border-b border-slate-200">

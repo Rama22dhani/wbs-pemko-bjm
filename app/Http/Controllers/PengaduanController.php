@@ -116,12 +116,14 @@ class PengaduanController extends Controller
                 ->with('success', 'Laporan investigasi kasus ini sudah selesai Anda kerjakan dan telah berada di meja Admin.');
         }
 
-        return view('investigator.detail', compact('pengaduan'));
+        $instansis = \App\Models\Instansi::orderBy('nama_instansi', 'asc')->get();
+        return view('investigator.detail', compact('pengaduan', 'instansis'));
     }
 
     public function updateInvestigator(Request $request, $id)
     {
         $request->validate([
+            'instansi_id'       => 'nullable|exists:instansis,id',
             'fakta_lapangan'    => 'required|string',
             'pihak_terlibat'    => 'required|string',
             'kesimpulan'        => 'required|string',
@@ -132,6 +134,7 @@ class PengaduanController extends Controller
         
         $dataUpdate = [
             'status'         => 'tindak_lanjut', 
+            'instansi_id'    => $request->instansi_id,
             'fakta_lapangan' => $request->fakta_lapangan,
             'pihak_terlibat' => $request->pihak_terlibat,
             'kesimpulan'     => $request->kesimpulan,

@@ -45,6 +45,7 @@ class Pengaduan extends Model
         'tindak_lanjut',
         'pihak_penindak',
         'tanggal_tindak_lanjut',
+        'instansi_id',
     ];
 
     public function user()
@@ -60,6 +61,11 @@ class Pengaduan extends Model
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
+    
+    public function instansi()
+    {
+        return $this->belongsTo(Instansi::class, 'instansi_id');
     }
     
     // Fungsi tanggapans() sudah dihapus dari sini

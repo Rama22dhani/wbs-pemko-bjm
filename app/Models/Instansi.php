@@ -18,4 +18,9 @@ class Instansi extends Model
     {
         return $this->hasMany(Pegawai::class, 'instansi_id');
     }
+
+    public function pengaduans()
+    {
+        return $this->hasMany(Pengaduan::class, 'instansi_id');
+    }
 }

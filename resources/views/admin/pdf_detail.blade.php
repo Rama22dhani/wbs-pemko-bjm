@@ -51,8 +51,14 @@
     <table class="data-table">
         <tr>
             <th>Identitas Pelapor</th>
-            <td>{{ $pengaduan->nama_pelapor ?? 'Anonim' }} ({{ $pengaduan->nomor_hp ?? '-' }} | {{ $pengaduan->email ?? '-' }}) {{ $pengaduan->nip ? '- NIP: '.$pengaduan->nip : '' }}</td>
+            <td>{{ $pengaduan->nama_pelapor ?? 'Anonim' }} ({{ $pengaduan->nomor_hp ?? '-' }} | {{ $pengaduan->email ?? '-' }})</td>
         </tr>
+        @if($pengaduan->nip)
+        <tr>
+            <th>NIP Terlapor</th>
+            <td>{{ $pengaduan->nip }}</td>
+        </tr>
+        @endif
         <tr>
             <th>Judul Laporan</th>
             <td>{{ $pengaduan->judul_laporan }}</td>
@@ -86,6 +92,10 @@
         <tr>
             <th>Investigator Lapangan</th>
             <td>{{ $pengaduan->investigator->pegawai->nama_pegawai ?? $pengaduan->investigator->name ?? 'Belum Ditugaskan' }}</td>
+        </tr>
+        <tr>
+            <th>Instansi Terlapor</th>
+            <td>{{ $pengaduan->instansi->nama_instansi ?? '-' }} {{ $pengaduan->instansi && $pengaduan->instansi->singkatan ? '('.$pengaduan->instansi->singkatan.')' : '' }}</td>
         </tr>
         <tr>
             <th>Fakta Lapangan</th>

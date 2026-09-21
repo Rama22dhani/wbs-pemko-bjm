@@ -66,7 +66,7 @@ class VerifikatorController extends Controller
 
     public function show($id)
     {
-        $pengaduan = Pengaduan::findOrFail($id);
+        $pengaduan = Pengaduan::with(['instansi', 'investigator', 'user', 'kategori'])->findOrFail($id);
         return view('verifikator.detail', compact('pengaduan')); 
     }
 
@@ -100,18 +100,21 @@ class VerifikatorController extends Controller
 
     public function editTindakLanjut($id)
     {
-        $pengaduan = Pengaduan::findOrFail($id);
+        $pengaduan = Pengaduan::with(['instansi', 'investigator'])->findOrFail($id);
 
         if (empty($pengaduan->kesimpulan)) {
             return redirect()->route('verifikator.dashboard')->with('error', 'Kasus ini belum memiliki Kertas Kerja / Kesimpulan dari tim Investigator!');
         }
 
-        return view('verifikator.tindaklanjut', compact('pengaduan'));
+        $instansis = \App\Models\Instansi::orderBy('nama_instansi', 'asc')->get();
+
+        return view('verifikator.tindaklanjut', compact('pengaduan', 'instansis'));
     }
 
     public function updateTindakLanjut(Request $request, $id)
     {
         $validatedData = $request->validate([
+            'instansi_id'           => 'nullable|exists:instansis,id',
             'judul_laporan'         => 'sometimes|required|string|max:255',
             'kategori_laporan'      => 'sometimes|required|string',
             'tanggal_kejadian'      => 'sometimes|required|date',

@@ -36,7 +36,13 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div class="mb-8">
             <h1 class="text-2xl font-bold text-slate-800">Formulir Keputusan Akhir Kasus</h1>
-            <p class="text-slate-500 mt-1">Tiket: <span class="font-mono font-bold text-bjm-gold">{{ $pengaduan->kode_tiket }}</span> | Pelapor: {{ $pengaduan->nama_pelapor }}</p>
+            <p class="text-slate-500 mt-1">
+                Tiket: <span class="font-mono font-bold text-bjm-gold">{{ $pengaduan->kode_tiket }}</span> | 
+                Pelapor: <span class="font-medium text-slate-700">{{ $pengaduan->nama_pelapor }}</span>
+                @if($pengaduan->instansi)
+                    | Instansi Terlapor: <span class="font-bold text-slate-800">🏢 {{ $pengaduan->instansi->nama_instansi }} {{ $pengaduan->instansi->singkatan ? '('.$pengaduan->instansi->singkatan.')' : '' }}</span>
+                @endif
+            </p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -54,7 +60,7 @@
                                 <p class="text-slate-800 font-bold text-sm">{{ $pengaduan->nama_pelapor }}</p>
                                 <p class="text-slate-500 text-xs">{{ $pengaduan->nomor_hp }} | {{ $pengaduan->email }}</p>
                                 @if($pengaduan->nip)
-                                    <p class="text-slate-500 text-xs">NIP: {{ $pengaduan->nip }}</p>
+                                    <p class="text-slate-500 text-xs font-medium">NIP Terlapor: {{ $pengaduan->nip }}</p>
                                 @endif
                             </div>
                             <div>
@@ -104,6 +110,28 @@
                                 <p class="text-slate-800 font-medium text-sm">{{ $pengaduan->investigator->name ?? 'Tim Lapangan' }}</p>
                             </div>
                             <div>
+                                <p class="text-xs text-slate-500 font-bold uppercase mb-1">Instansi Terlapor</p>
+                                @if($pengaduan->instansi)
+                                    <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3 text-slate-800">
+                                        <div class="flex items-start gap-2.5">
+                                            <span class="text-base leading-none mt-0.5">🏢</span>
+                                            <div>
+                                                <p class="font-bold text-sm text-slate-900 leading-snug">{{ $pengaduan->instansi->nama_instansi }}</p>
+                                                @if($pengaduan->instansi->singkatan)
+                                                    <span class="inline-block mt-1 text-[11px] font-bold text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded">
+                                                        {{ $pengaduan->instansi->singkatan }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-400 text-xs italic">
+                                        Belum ditentukan oleh investigator
+                                    </div>
+                                @endif
+                            </div>
+                            <div>
                                 <p class="text-xs text-slate-500 font-bold uppercase mb-1">Fakta Lapangan</p>
                                 <div class="bg-slate-50 p-3 rounded border border-slate-100 text-sm text-slate-700 leading-relaxed max-h-32 overflow-y-auto">
                                     {{ $pengaduan->fakta_lapangan ?? '-' }}
@@ -145,6 +173,41 @@
                     <form action="{{ route('admin.tindaklanjut.update', $pengaduan->id) }}" method="POST" class="p-8">
                         @csrf
                         @method('PUT')
+
+                        <!-- Informasi Detail Instansi Terlapor -->
+                        <div class="mb-6 bg-amber-50/60 border border-amber-200/80 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center text-xl shrink-0 border border-amber-200">
+                                    🏢
+                                </div>
+                                <div>
+                                    <p class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800">Instansi Terlapor (Objek Kasus)</p>
+                                    @if($pengaduan->instansi)
+                                        <p class="text-sm font-bold text-slate-900 mt-0.5">
+                                            {{ $pengaduan->instansi->nama_instansi }}
+                                            @if($pengaduan->instansi->singkatan)
+                                                <span class="text-xs font-bold text-amber-700 bg-white border border-amber-200 px-2 py-0.5 rounded-full ml-1.5">{{ $pengaduan->instansi->singkatan }}</span>
+                                            @endif
+                                        </p>
+                                    @else
+                                        <p class="text-sm text-slate-500 italic mt-0.5">Belum ditentukan di kertas kerja investigator</p>
+                                    @endif
+                                </div>
+                            </div>
+                            @if(isset($instansis) && $instansis->count() > 0)
+                            <div class="w-full sm:w-auto sm:min-w-[240px]">
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Koreksi Instansi Terlapor (Jika Perlu)</label>
+                                <select name="instansi_id" class="w-full bg-white border border-slate-300 text-slate-800 rounded-lg px-3 py-1.5 text-xs focus:border-bjm-gold outline-none">
+                                    <option value="">-- Tetapkan Instansi Terlapor --</option>
+                                    @foreach($instansis as $inst)
+                                        <option value="{{ $inst->id }}" {{ (isset($pengaduan->instansi_id) && $pengaduan->instansi_id == $inst->id) ? 'selected' : '' }}>
+                                            {{ $inst->nama_instansi }} {{ $inst->singkatan ? '('.$inst->singkatan.')' : '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @endif
+                        </div>
 
                         <div class="mb-5 mt-4">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Instansi / Pihak Penindak *</label>

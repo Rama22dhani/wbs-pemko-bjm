@@ -174,36 +174,51 @@
                         @method('PUT')
 
                         <div class="space-y-6 mb-8">
-                            <!-- KOLOM 1 -->
+                            <!-- KOLOM 1: INSTANSI -->
                             <div>
-                                <label class="block text-sm font-extrabold mb-1 text-slate-700">1. Fakta Objektif yang Ditemukan di Lapangan</label>
+                                <label class="block text-sm font-extrabold mb-1 text-slate-700">1. Instansi Terlapor</label>
+                                <p class="text-[11px] text-slate-500 mb-2 italic">Pilih instansi tempat kejadian / terlapor berada.</p>
+                                <select name="instansi_id" required 
+                                    class="w-full bg-white border border-slate-300 text-slate-800 rounded-xl p-4 focus:border-bjm-gold focus:ring-1 focus:ring-bjm-gold outline-none shadow-sm transition text-sm">
+                                    <option value="" disabled selected>-- Pilih Instansi Terlapor --</option>
+                                    @foreach($instansis as $instansi)
+                                        <option value="{{ $instansi->id }}" {{ (isset($pengaduan->instansi_id) && $pengaduan->instansi_id == $instansi->id) ? 'selected' : '' }}>
+                                            {{ $instansi->nama_instansi }} {{ $instansi->singkatan ? '('.$instansi->singkatan.')' : '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- KOLOM 2 -->
+                            <div>
+                                <label class="block text-sm font-extrabold mb-1 text-slate-700">2. Fakta Objektif yang Ditemukan di Lapangan</label>
                                 <p class="text-[11px] text-slate-500 mb-2 italic">Uraikan kondisi nyata di lokasi. Jika tidak ada bukti pelanggaran, sebutkan secara jujur.</p>
                                 <textarea name="fakta_lapangan" rows="4" required 
                                     class="w-full bg-white border border-slate-300 text-slate-800 rounded-xl p-4 focus:border-bjm-gold focus:ring-1 focus:ring-bjm-gold outline-none leading-relaxed shadow-sm transition text-sm" 
                                     placeholder="Contoh Terbukti: Ditemukan 2 unit laptop dinas di rumah terlapor...&#10;Contoh Tidak Terbukti: Hasil sidak gudang hari Sabtu jam 10 pagi, seluruh 50 unit komputer komplet bersegel resmi. Tidak ada aset yang hilang.">{{ $pengaduan->fakta_lapangan ?? '' }}</textarea>
                             </div>
                             
-                            <!-- KOLOM 2 -->
+                            <!-- KOLOM 3 -->
                             <div>
-                                <label class="block text-sm font-extrabold mb-1 text-slate-700">2. Pihak Terkait yang Dimintai Keterangan</label>
+                                <label class="block text-sm font-extrabold mb-1 text-slate-700">3. Pihak Terkait yang Dimintai Keterangan</label>
                                 <p class="text-[11px] text-slate-500 mb-2 italic">Sebutkan saksi/terlapor beserta esensi keterangan mereka.</p>
                                 <textarea name="pihak_terlibat" rows="3" required 
                                     class="w-full bg-white border border-slate-300 text-slate-800 rounded-xl p-4 focus:border-bjm-gold focus:ring-1 focus:ring-bjm-gold outline-none leading-relaxed shadow-sm transition text-sm" 
                                     placeholder="Contoh: Bapak Hendra (Kepala Gudang) menyatakan bahwa seluruh barang baru disortir dan tidak pernah dikeluarkan tanpa surat izin...">{{ $pengaduan->pihak_terlibat ?? '' }}</textarea>
                             </div>
 
-                            <!-- KOLOM 3 -->
+                            <!-- KOLOM 4 -->
                             <div>
-                                <label class="block text-sm font-extrabold mb-1 text-slate-700">3. Kesimpulan Materiil & Rekomendasi</label>
+                                <label class="block text-sm font-extrabold mb-1 text-slate-700">4. Kesimpulan Materiil & Rekomendasi</label>
                                 <p class="text-[11px] text-slate-500 mb-2 italic">Tuliskan putusan investigasi Anda secara tegas agar Admin mudah mengambil keputusan.</p>
                                 <textarea name="kesimpulan" rows="4" required 
                                     class="w-full bg-white border border-slate-300 text-slate-800 rounded-xl p-4 focus:border-bjm-gold focus:ring-1 focus:ring-bjm-gold outline-none leading-relaxed shadow-sm transition text-sm font-medium" 
                                     placeholder="Jika Terbukti: TERBUKTI MELANGGAR. Direkomendasikan pemanggilan terlapor ke Inspektorat...&#10;&#10;Jika Tidak Terbukti: TIDAK TERBUKTI. Dugaan pelapor tidak akurat / salah identifikasi aset. Direkomendasikan penutupan laporan tanpa sanksi.">{{ $pengaduan->kesimpulan ?? '' }}</textarea>
                             </div>
 
-                            <!-- KOLOM 4: BUKTI TEMUAN DENGAN PREVIEW AKTIF -->
+                            <!-- KOLOM 5: BUKTI TEMUAN DENGAN PREVIEW AKTIF -->
                             <div class="pt-6 border-t border-slate-200">
-                                <label class="block text-sm font-extrabold mb-1 text-slate-700">4. Lampiran Bukti Temuan Lapangan (Opsional)</label>
+                                <label class="block text-sm font-extrabold mb-1 text-slate-700">5. Lampiran Bukti Temuan Lapangan (Opsional)</label>
                                 <p class="text-[11px] text-slate-500 mb-3">Unggah foto kondisi lapangan atau dokumen klarifikasi dari terlapor.</p>
                                 
                                 <div class="flex items-center justify-center w-full">

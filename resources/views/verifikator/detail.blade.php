@@ -87,9 +87,6 @@
                     <div class="space-y-2 mt-4">
                         <p class="text-slate-600 text-sm flex items-center gap-2"><svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg> {{ $pengaduan->nomor_hp }}</p>
                         <p class="text-slate-600 text-sm flex items-center gap-2"><svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg> {{ $pengaduan->email }}</p>
-                        @if($pengaduan->nip)
-                            <p class="text-slate-600 text-sm flex items-center gap-2 mt-3 pt-3 border-t border-slate-200"><span class="font-semibold text-slate-800">NIP:</span> {{ $pengaduan->nip }}</p>
-                        @endif
                     </div>
                 </div>
                 
@@ -102,6 +99,12 @@
                         <p class="text-xs text-slate-500 font-bold tracking-wider uppercase">Detail Kejadian</p>
                     </div>
                     <div class="space-y-4 mt-4">
+                        @if($pengaduan->nip)
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">NIP Terlapor</p>
+                            <p class="text-slate-800 font-semibold text-sm mt-0.5 font-mono">{{ $pengaduan->nip }}</p>
+                        </div>
+                        @endif
                         <div>
                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Lokasi Kejadian</p>
                             <p class="text-slate-800 font-semibold text-sm mt-0.5 leading-snug">{{ $pengaduan->lokasi_kejadian }}</p>
@@ -112,7 +115,7 @@
                         </div>
                         <div>
                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Kategori</p>
-                            <p class="text-slate-800 font-semibold text-sm mt-0.5">{{ $pengaduan->kategori_laporan }}</p>
+                            <p class="text-slate-800 font-semibold text-sm mt-0.5">{{ $pengaduan->kategori ? $pengaduan->kategori->nama_kategori : $pengaduan->kategori_laporan }}</p>
                         </div>
                     </div>
                 </div>
@@ -184,23 +187,32 @@
         <!-- TAB: INVESTIGASI -->
         @if($pengaduan->status == 'selesai' || $pengaduan->status == 'investigasi' || $pengaduan->status == 'tindak_lanjut')
         <div x-show="tab === 'investigasi'" style="display: none;" class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-10 shadow-lg shadow-slate-200/50 space-y-8" x-transition.opacity>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-b border-slate-100 pb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 border-b border-slate-100 pb-8">
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
                     <p class="text-xs text-slate-500 uppercase font-bold mb-2">Investigator Lapangan</p>
-                    <p class="text-slate-800 font-extrabold text-lg flex items-center gap-2">
+                    <p class="text-slate-800 font-extrabold text-base flex items-center gap-2">
                         <span>🕵️‍♂️</span> {{ $pengaduan->investigator->name ?? 'Belum Ditugaskan' }}
                     </p>
-                    <p class="text-slate-500 text-sm mt-1 ml-8">{{ $pengaduan->investigator->email ?? '' }}</p>
+                    <p class="text-slate-500 text-xs mt-1 ml-7">{{ $pengaduan->investigator->email ?? '' }}</p>
+                </div>
+                <div class="bg-amber-50/80 p-6 rounded-2xl border border-amber-100">
+                    <p class="text-xs text-amber-700 uppercase font-bold mb-2">Instansi Terlapor</p>
+                    <p class="text-slate-800 font-extrabold text-base flex items-center gap-2">
+                        <span>🏢</span> {{ $pengaduan->instansi->nama_instansi ?? 'Belum Ditentukan' }}
+                    </p>
+                    @if($pengaduan->instansi && $pengaduan->instansi->singkatan)
+                        <p class="text-amber-700 text-xs font-semibold mt-1 ml-7">({{ $pengaduan->instansi->singkatan }})</p>
+                    @endif
                 </div>
                 <div class="bg-purple-50 p-6 rounded-2xl border border-purple-100">
                     <p class="text-xs text-purple-600 uppercase font-bold mb-3">Bukti Temuan Lapangan</p>
                     @if($pengaduan->bukti_investigasi)
-                        <a href="{{ asset('storage/' . $pengaduan->bukti_investigasi) }}" target="_blank" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-purple-600/30 transform hover:scale-105">
+                        <a href="{{ asset('storage/' . $pengaduan->bukti_investigasi) }}" target="_blank" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md shadow-purple-600/30 transform hover:scale-105">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
                             Lihat Lampiran Bukti
                         </a>
                     @else
-                        <span class="text-purple-400 italic font-medium text-sm">Tidak ada lampiran bukti temuan</span>
+                        <span class="text-purple-400 italic font-medium text-xs">Tidak ada lampiran bukti temuan</span>
                     @endif
                 </div>
             </div>
@@ -284,6 +296,20 @@
             <div>
                 <p class="text-xs text-blue-600 uppercase font-extrabold tracking-wider mb-4 border-b border-slate-100 pb-3 flex items-center gap-2"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded">2</span> Hasil Investigasi Lapangan</p>
                 <div class="bg-gradient-to-br from-blue-50/80 to-indigo-50/50 p-6 rounded-2xl border border-blue-100 shadow-sm space-y-6">
+                    @if($pengaduan->instansi)
+                    <div class="p-4 bg-white/90 rounded-xl border border-blue-200/80 flex items-center gap-3">
+                        <span class="text-2xl">🏢</span>
+                        <div>
+                            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Instansi Terlapor</p>
+                            <p class="text-sm font-extrabold text-slate-900 mt-0.5">
+                                {{ $pengaduan->instansi->nama_instansi }}
+                                @if($pengaduan->instansi->singkatan)
+                                    <span class="text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full ml-1">{{ $pengaduan->instansi->singkatan }}</span>
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                    @endif
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <p class="text-[10px] font-bold text-blue-500 uppercase tracking-wide">Fakta Lapangan</p>

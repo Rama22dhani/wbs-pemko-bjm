@@ -29,6 +29,11 @@
         @else
             @page { size: A4 portrait; }
         @endif
+
+        @if($kategori == 'kasus')
+            table.data-table th, table.data-table td { padding: 6px 4px; font-size: 8.5px; }
+            table.data-table th { font-size: 8px; }
+        @endif
     </style>
 </head>
 <body>
@@ -128,7 +133,7 @@
                         <td style="font-size: 9px;">{{ $d->tempat_lahir ? $d->tempat_lahir . ', ' : '' }}{{ $d->tanggal_lahir ? \Carbon\Carbon::parse($d->tanggal_lahir)->format('d-m-Y') : '-' }}</td>
                         <td style="font-size: 9px;">{{ $d->alamat ?? '-' }}</td>
                         <td class="center" style="font-size: 9px;">{{ $d->status_kepegawaian }}</td>
-                        <td style="font-size: 9px;">{{ $d->asal_instansi }}</td>
+                        <td style="font-size: 9px;">{{ $d->instansi->nama_instansi ?? '-' }}</td>
                         <td style="font-size: 9px;">{{ $d->jabatan }}</td>
                         <td class="center" style="font-size: 9px;">
                             @if($d->user)
@@ -189,11 +194,11 @@
     @elseif($kategori == 'instansi')
         <table class="data-table">
             <thead>
-                <tr>
                     <th style="width: 5%;">No</th>
-                    <th style="width: 45%;">Nama Instansi</th>
-                    <th style="width: 25%;">Singkatan</th>
-                    <th style="width: 25%;">Total Orang/Pegawai</th>
+                    <th style="width: 35%;">Nama Instansi</th>
+                    <th style="width: 20%;">Singkatan</th>
+                    <th style="width: 20%;">Total Orang/Pegawai</th>
+                    <th style="width: 20%;">Total Kasus</th>
                 </tr>
             </thead>
             <tbody>
@@ -203,10 +208,11 @@
                         <td><strong>{{ $d->nama_instansi }}</strong></td>
                         <td class="center">{{ $d->singkatan ?? '-' }}</td>
                         <td class="center"><strong>{{ $d->pegawais_count }}</strong> Orang</td>
+                        <td class="center"><strong>{{ $d->pengaduans_count }}</strong> Kasus</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="center" style="font-style: italic; color: #777; padding: 15px;">Belum ada data instansi.</td>
+                        <td colspan="5" class="center" style="font-style: italic; color: #777; padding: 15px;">Belum ada data instansi.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -215,7 +221,19 @@
     @else
         <table class="data-table">
             <thead>
-                @if($kategori == 'tanggapan')
+                @if($kategori == 'kasus')
+                    <tr>
+                        <th style="width: 4%;">No</th>
+                        <th style="width: 11%;">Kode Kasus</th>
+                        <th style="width: 12%;">Nama Pelapor</th>
+                        <th style="width: 14%;">Judul Laporan / Kasus</th>
+                        <th style="width: 8%;">Tgl Masuk</th>
+                        <th style="width: 13%;">Lokasi</th>
+                        <th style="width: 23%;">Deskripsi</th>
+                        <th style="width: 7%;">Tingkat</th>
+                        <th style="width: 8%;">Status</th>
+                    </tr>
+                @elseif($kategori == 'tanggapan')
                     <tr>
                         <th style="width: 5%;">No</th>
                         <th style="width: 20%;">Kode Kasus</th>
@@ -226,17 +244,13 @@
                 @else
                     <tr>
                         <th style="width: {{ $kategori == 'investigasi' ? '4%' : '5%' }};">No</th>
-                        <th style="width: {{ $kategori == 'investigasi' ? '11%' : '15%' }};">Kode Kasus</th>
-                        <th style="width: {{ $kategori == 'investigasi' ? '15%' : '25%' }};">Judul Laporan / Kasus</th>
-                        @if($kategori == 'kasus')
-                            <th style="width: 15%;">Nama Pelapor</th>
-                            <th style="width: 12%;">Tgl Masuk</th>
-                            <th style="width: 15%;">Tingkat</th>
-                            <th style="width: 13%;">Status</th>
-                        @elseif($kategori == 'investigasi')
-                            <th style="width: 30%;">Fakta Lapangan</th>
+                        <th style="width: {{ $kategori == 'investigasi' ? '10%' : '15%' }};">Kode Kasus</th>
+                        <th style="width: {{ $kategori == 'investigasi' ? '14%' : '25%' }};">Judul Laporan / Kasus</th>
+                        @if($kategori == 'investigasi')
+                            <th style="width: 14%;">Instansi Terlapor</th>
+                            <th style="width: 24%;">Fakta Lapangan</th>
                             <th style="width: 12%;">Pihak Terkait / Saksi</th>
-                            <th style="width: 28%;">Kesimpulan Akhir</th>
+                            <th style="width: 22%;">Kesimpulan Akhir</th>
                         @elseif($kategori == 'tindaklanjut')
                             <th style="width: 25%;">Instansi Penindak</th>
                             <th style="width: 30%;">Sanksi / Keputusan Final</th>
@@ -251,25 +265,37 @@
             <tbody>
                 @forelse($data as $index => $d)
                     <tr>
-                        <td class="center">{{ $index + 1 }}</td>
-                        @if($kategori == 'tanggapan')
+                        @if($kategori == 'kasus')
+                            <td class="center">{{ $index + 1 }}</td>
+                            <td style="font-family: monospace; font-weight: bold;">{{ $d->kode_tiket }}</td>
+                            <td>{{ $d->user->name ?? ($d->nama_pelapor ?: 'Anonim') }}</td>
+                            <td>{{ $d->judul_laporan }}</td>
+                            <td class="center">{{ \Carbon\Carbon::parse($d->created_at)->format('d/m/Y') }}</td>
+                            <td>{{ $d->lokasi_kejadian }}</td>
+                            <td style="line-height: 1.35;">{{ $d->isi_laporan }}</td>
+                            <td class="center" style="font-weight: bold;">{{ $d->tingkat_pelanggaran ?? '-' }}</td>
+                            <td class="center" style="font-weight: bold; text-transform: uppercase;">{{ $d->status }}</td>
+                        @elseif($kategori == 'tanggapan')
+                            <td class="center">{{ $index + 1 }}</td>
                             <td style="font-family: monospace; font-weight: bold;">{{ $d->kode_tiket }}</td>
                             <td>{{ $d->user->name ?? $d->nama_pelapor ?? 'Pelapor' }}</td>
                             <td>Informasi Susulan</td>
                             <td><em>"{{ $d->pesan_susulan }}"</em></td>
                         @else
-                            <td style="font-family: monospace; font-weight: bold;">{{ $d->kode_tiket }}</td>
-                            <td>{{ $d->judul_laporan }}</td>
+                            <td class="center" style="{{ $kategori == 'investigasi' ? 'font-size: 9.5px;' : '' }}">{{ $index + 1 }}</td>
+                            <td style="font-family: monospace; font-weight: bold; {{ $kategori == 'investigasi' ? 'font-size: 9px;' : '' }}">{{ $d->kode_tiket }}</td>
+                            <td style="{{ $kategori == 'investigasi' ? 'font-size: 9.5px;' : '' }}">{{ $d->judul_laporan }}</td>
                             
-                            @if($kategori == 'kasus')
-                                <td>{{ $d->user->name ?? 'Anonim' }}</td>
-                                <td class="center">{{ \Carbon\Carbon::parse($d->created_at)->format('d/m/Y') }}</td>
-                                <td class="center" style="font-weight: bold;">{{ $d->tingkat_pelanggaran ?? '-' }}</td>
-                                <td class="center" style="font-weight: bold; text-transform: uppercase;">{{ $d->status }}</td>
-                            @elseif($kategori == 'investigasi')
-                                <td>{{ $d->fakta_lapangan ?? '-' }}</td>
-                                <td>{{ $d->pihak_terlibat ?? '-' }}</td>
-                                <td>{{ $d->kesimpulan ?? '-' }}</td>
+                            @if($kategori == 'investigasi')
+                                <td style="font-size: 9.5px;">
+                                    <strong>{{ $d->instansi->nama_instansi ?? '-' }}</strong>
+                                    @if($d->instansi && $d->instansi->singkatan)
+                                        <br><span style="color: #555; font-size: 8.5px;">({{ $d->instansi->singkatan }})</span>
+                                    @endif
+                                </td>
+                                <td style="font-size: 9.5px;">{{ $d->fakta_lapangan ?? '-' }}</td>
+                                <td style="font-size: 9.5px;">{{ $d->pihak_terlibat ?? '-' }}</td>
+                                <td style="font-size: 9.5px;">{{ $d->kesimpulan ?? '-' }}</td>
                             @elseif($kategori == 'tindaklanjut')
                                 <td>{{ $d->pihak_penindak ?? '-' }}</td>
                                 <td>{{ $d->tindak_lanjut ?? '-' }}</td>
@@ -311,7 +337,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="center" style="font-style: italic; color: #777; padding: 15px;">Belum ada arsip data untuk kategori rekapitulasi ini.</td>
+                        <td colspan="{{ $kategori == 'kasus' ? '9' : ($kategori == 'investigasi' ? '7' : '6') }}" class="center" style="font-style: italic; color: #777; padding: 15px;">Belum ada arsip data untuk kategori rekapitulasi ini.</td>
                     </tr>
                 @endforelse
             </tbody>

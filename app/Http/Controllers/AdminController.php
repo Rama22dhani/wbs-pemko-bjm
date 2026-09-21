@@ -91,25 +91,28 @@ class AdminController extends Controller
     // FUNGSI MENAMPILKAN BERKAS KASUS (DETAIL ADMIN)
     public function show($id)
     {
-        $pengaduan = Pengaduan::findOrFail($id);
+        $pengaduan = Pengaduan::with(['instansi', 'investigator', 'user', 'kategori'])->findOrFail($id);
         return view('admin.detail', compact('pengaduan'));
     }
 
     // FUNGSI HALAMAN INPUT TINDAK LANJUT
     public function editTindakLanjut($id)
     {
-        $pengaduan = Pengaduan::findOrFail($id);
+        $pengaduan = Pengaduan::with(['instansi', 'investigator'])->findOrFail($id);
 
         if (empty($pengaduan->kesimpulan)) {
             return redirect()->route('admin.dashboard')->with('error', 'Kasus ini belum memiliki Kertas Kerja / Kesimpulan dari tim Investigator!');
         }
 
-        return view('admin.tindaklanjut', compact('pengaduan'));
+        $instansis = \App\Models\Instansi::orderBy('nama_instansi', 'asc')->get();
+
+        return view('admin.tindaklanjut', compact('pengaduan', 'instansis'));
     }
 
     public function updateTindakLanjut(Request $request, $id)
     {
         $validatedData = $request->validate([
+            'instansi_id'           => 'nullable|exists:instansis,id',
             'judul_laporan'         => 'sometimes|required|string|max:255',
             'kategori_id'           => 'sometimes|required|exists:kategoris,id',
             'tanggal_kejadian'      => 'sometimes|required|date',
@@ -350,6 +353,7 @@ class AdminController extends Controller
             'alasan_penolakan'      => $request->alasan_penolakan,
             'investigator_id'       => $request->investigator_id,
             'pesan_susulan'         => $request->pesan_susulan,
+            'instansi_id'           => $request->has('instansi_id') ? $request->instansi_id : $kasus->instansi_id,
             'hasil_investigasi'     => $request->has('hasil_investigasi') ? $request->hasil_investigasi : $kasus->hasil_investigasi,
             'fakta_lapangan'        => $request->has('fakta_lapangan') ? $request->fakta_lapangan : $kasus->fakta_lapangan,
             'pihak_terlibat'        => $request->has('pihak_terlibat') ? $request->pihak_terlibat : $kasus->pihak_terlibat,
@@ -452,6 +456,7 @@ class AdminController extends Controller
     public function updateInvestigasi(Request $request, $id)
     {
         $request->validate([
+            'instansi_id'       => 'nullable|exists:instansis,id',
             'fakta_lapangan'    => 'required|string',
             'pihak_terlibat'    => 'required|string',
             'kesimpulan'        => 'required|string',
@@ -462,6 +467,7 @@ class AdminController extends Controller
         $kasus = Pengaduan::findOrFail($id);
         
         $dataUpdate = [
+            'instansi_id'     => $request->has('instansi_id') ? $request->instansi_id : $kasus->instansi_id,
             'fakta_lapangan'  => $request->fakta_lapangan,
             'pihak_terlibat'  => $request->pihak_terlibat,
             'kesimpulan'      => $request->kesimpulan,
@@ -663,7 +669,7 @@ class AdminController extends Controller
 
             case 'investigasi':
                 $title = "LAPORAN REKAPITULASI DATA HASIL INVESTIGASI";
-                $data = Pengaduan::whereNotNull('fakta_lapangan')->latest()->get();
+                $data = Pengaduan::with(['instansi', 'investigator'])->whereNotNull('fakta_lapangan')->latest()->get();
                 break;
             case 'tindaklanjut':
                 $title = "LAPORAN REKAPITULASI DATA TINDAK LANJUT";
@@ -692,7 +698,7 @@ class AdminController extends Controller
                 break;
             case 'master_pegawai':
                 $title = "LAPORAN REKAPITULASI MASTER DATA PEGAWAI";
-                $data = Pegawai::with('user')->latest()->get();
+                $data = Pegawai::with(['user', 'instansi'])->latest()->get();
                 break;
             case 'kategori':
                 $title = "LAPORAN REKAPITULASI KATEGORI PELANGGARAN";
@@ -700,7 +706,7 @@ class AdminController extends Controller
                 break;
             case 'instansi':
                 $title = "LAPORAN DATA MASTER INSTANSI";
-                $data = Instansi::withCount('pegawais')->orderBy('id', 'asc')->get();
+                $data = Instansi::withCount(['pegawais', 'pengaduans'])->orderBy('id', 'asc')->get();
                 break;
 
             default:
